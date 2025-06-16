@@ -1,0 +1,244 @@
+.iconHolder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 36px;
+  border-radius: 8px;
+  transition: all ease-in-out 120ms;
+  -webkit-app-region: none;
+  background: transparent;
+  margin-right: -2px;
+
+  .settingsIcon {
+    color: var(--secondary);
+    height: 20px;
+    width: 20px;
+    transition: all ease-in-out 220ms;
+    transition-delay: 40ms;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background: var(--bg-secondary);
+    color: var(--primary);
+
+    .homeIcon,
+    .settingsIcon {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    background: var(--bg-tertiary);
+  }
+}
+
+button,
+fieldset,
+input {
+  all: unset;
+}
+
+.DialogOverlay {
+  background-color: var(--bg-tertiary);
+  position: fixed;
+  inset: 0;
+  animation: overlayShow 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.9;
+  z-index: 4;
+  overflow-y: overlay;
+}
+
+.DialogContent {
+  z-index: 6;
+  background-color: var(--bg);
+  border-radius: 17px;
+  position: fixed;
+  left: 50%;
+  top: 10vh;
+  transform: translate(-50%, 0%);
+  width: 90vw;
+  max-width: 700px;
+  display: block;
+  padding: 2px 2px 0 2px;
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all ease-in-out 120ms;
+}
+
+.DialogContent:focus {
+  outline: none;
+}
+
+.DialogTitle {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.textarea {
+  display: block;
+  background: none;
+  border: none;
+  font-size: 3em;
+  color: var(--secondary);
+  resize: none;
+  width: 100%;
+  outline: none;
+  max-width: 600px;
+  font-weight: 550;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom left, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  overflow: hidden;
+
+  &::placeholder {
+    color: var(--secondary);
+    background: linear-gradient(
+      to bottom right,
+      var(--primary),
+      #1257d8
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  &:focus {
+    color: var(--primary);
+  }
+}
+
+.meta {
+  border-top: 1px dashed var(--bg-secondary);
+  padding: 7px 1px 1px 1px;
+  margin: 10px 6px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  // height: 32px;
+
+  .sep {
+    display: flex;
+    height: 4px;
+    width: 4px;
+    border-radius: 90px;
+    background: var(--bg-secondary);
+  }
+}
+
+ul {
+  margin: 0;
+}
+
+.gradient {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  background: var(--bg-secondary);
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  width: calc(100% - 14px);
+  height: 20px;
+  z-index: 15;
+  border-radius: 0 0 17px 17px;
+  pointer-events: none;
+}
+.gradient2 {
+  position: absolute;
+  top: 110px;
+  left: 0;
+  background: var(--bg-secondary);
+  background: linear-gradient(to top, transparent, var(--bg));
+  width: calc(100% - 14px);
+  height: 20px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.empty {
+  text-align: center;
+  color: var(--secondary);
+  padding: 35px 0 48px 0;
+  font-size: 1.1em;
+}
+.scroller {
+  max-height: calc(90vh - 120px);
+  overflow-x: hidden;
+  overflow-y: overlay;
+  padding: 0 7px;
+  padding-top: 10px;
+  margin-right: 2px;
+  margin-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--base);
+    border-radius: 20px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: var(--base-hover);
+    }
+  }
+}
+
+.text {
+  font-size: 1.3em;
+  line-height: 1.4;
+  max-width: 560px;
+}
+
+.text_context {
+  font-size: 0.95em;
+  margin-top: 20px;
+  line-height: 1.45;
+  max-width: 380px;
+  opacity: 0.7;
+}
+
+.post {
+  position: relative;
+  font-size: 0.9rem;
+  margin-left: -15px;
+  z-index: 9;
+  // pointer-events: none;
+  margin-bottom: 0px;
+}
+
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.9;
+  }
+}
+
+@keyframes contentShow {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10vh);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.list {
+  height: 100%;
+  min-height: 500px;
+}

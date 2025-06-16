@@ -1,0 +1,120 @@
+.message {
+  font-size: 1.2em;
+  line-height: 1.45;
+  white-space: pre;
+  text-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  margin: 0 0 10px 0;
+  padding: 0 0 10px 0;
+
+  .wrap {
+    display: flex;
+    width: 100%;
+    max-width: 550px;
+    text-align: left;
+    align-items: flex-start;
+    gap: 15px;
+
+    .ball {
+      flex: 0 0 auto;
+      height: 30px;
+      width: 30px;
+      background: var(--bg);
+      border-radius: 90px;
+      color: var(--primary);
+      line-height: 1;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text {
+      color: var(--primary);
+      text-wrap: wrap;
+      background: var(--bg);
+      padding: 7px 12px;
+      border-radius: 13px;
+      min-width: 50px;
+      min-height: 30px;
+
+      p {
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      ol,
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style-position: inside;
+
+        li {
+          margin: 0;
+          padding: 0;
+
+          p {
+            padding: 0;
+            margin: 0;
+          }
+        }
+      }
+
+      blockqoute {
+        margin: 0;
+        padding: 0;
+        border-left: 3px solid var(--primary);
+        margin-left: 10px;
+        padding-left: 10px;
+        font-size: 1.1em;
+        font-style: italic;
+      }
+    }
+  }
+
+  .avatar {
+    height: 16px;
+    width: 16px;
+  }
+
+  &.user {
+    .wrap {
+      .ball {
+        background: var(--base);
+      }
+
+      .text {
+        color: var(--primary);
+        border-radius: 7px 13px 13px 13px;
+      }
+    }
+  }
+
+  &.ai {
+    .wrap {
+      flex-direction: row-reverse;
+
+      .ball {
+        .avatar {
+          height: 18px;
+          width: 18px;
+          fill: var(--secondary);
+        }
+      }
+
+      .text {
+        color: var(--secondary);
+        border-radius: 13px 7px 13px 13px;
+      }
+    }
+  }
+}

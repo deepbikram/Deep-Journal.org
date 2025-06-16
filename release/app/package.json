@@ -1,0 +1,17 @@
+{
+  "name": "pile",
+  "version": "1.0.0",
+  "description": "Pile: Everyday journal and thought companion.",
+  "license": "MIT",
+  "author": {
+    "name": "Udara Jay",
+    "email": "me@udara.io",
+    "url": "https://udara.io/pile"
+  },
+  "main": "./dist/main/main.js",
+  "scripts": {
+    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "postinstall": "pnpm run rebuild && pnpm run link-modules",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+  }
+}

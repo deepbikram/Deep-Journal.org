@@ -1,0 +1,362 @@
+.iconHolder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 36px;
+  border-radius: 8px;
+  transition: all ease-in-out 120ms;
+  -webkit-app-region: none;
+  background: transparent;
+  margin-right: -2px;
+
+  .chatIcon {
+    color: var(--secondary);
+    height: 23px;
+    width: 23px;
+    transition: all ease-in-out 220ms;
+    transition-delay: 40ms;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background: var(--bg-secondary);
+    color: var(--primary);
+
+    .chatIcon {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    background: var(--bg-tertiary);
+  }
+
+  &.disabled {
+    pointer-events: none; // Prevent interaction
+    opacity: 0.5; // Make the whole container look disabled
+  }
+}
+
+button,
+fieldset,
+input {
+  all: unset;
+}
+
+.DialogOverlay {
+  background-color: var(--bg-secondary);
+  position: fixed;
+  inset: 0;
+  animation: overlayShow 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.9;
+  z-index: 4;
+  overflow-y: overlay;
+}
+
+.DialogContent {
+  z-index: 6;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100vw;
+  height: 100vh;
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: overlay;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.DialogContent:focus {
+  outline: none;
+}
+
+.scroller {
+  width: calc(100vw - 10px);
+  height: 100vh;
+  overflow-y: hidden;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--base);
+    border-radius: 20px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: var(--base-hover);
+    }
+  }
+}
+
+.header {
+  padding: 0 85px;
+  z-index: 1000;
+
+  background: linear-gradient(
+    180deg,
+    rgba(127, 178, 255, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+
+  .wrapper {
+    position: relative;
+    max-width: 750px;
+    margin: 0 auto;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    z-index: 5;
+    // background: var(--bg-tertiary);
+
+    .DialogTitle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      color: var(--primary);
+      font-weight: 400;
+      font-size: 14px;
+      position: relative;
+      z-index: 10 !important;
+      user-select: none;
+      padding: 0 10px;
+      margin: 0 0 2px 5px;
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 6;
+      gap: 4px;
+      padding: 4px;
+
+      .button {
+        text-wrap: nowrap;
+        background: var(--bg);
+        color: var(--secondary);
+        font-size: 13px;
+        padding: 4px 18px 4px 12px;
+        transition: all ease-in-out 150ms;
+        -webkit-app-region: none;
+        user-select: none;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        height: 36px;
+        border-radius: 90px;
+
+        &:hover {
+          cursor: pointer;
+          background: var(--bg-secondary);
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
+
+        .icon {
+          height: 20px;
+          width: 20px;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+
+
+
+.close {
+  text-wrap: nowrap;
+  background: var(--bg);
+  color: var(--secondary);
+  border-radius: 7px 7px 13px 7px;
+  height: 36px;
+  font-size: 13px;
+  padding: 0 9px;
+  transition: all ease-in-out 150ms;
+  -webkit-app-region: none;
+  user-select: none;
+  font-weight: 450;
+  display: flex;
+  align-items: center;
+  stroke-width: 2px;
+
+  &:hover {
+    cursor: pointer;
+    background: var(--bg-secondary);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.inputBar {
+  position: fixed;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+
+  .holder {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-tertiary);
+    padding: 4px 4px 4px 4px;
+    border-radius: 17px 17px 0 0;
+  }
+
+  .disclaimer {
+    margin: 7px 0 3px 7px;
+    color: var(--secondary);
+    position: relative;
+  }
+
+  .bar {
+    position: relative;
+    width: 700px;
+    max-width: 700px;
+    display: flex;
+    border-radius: 13px;
+    transition: all cubic-bezier(0.215, 0.61, 0.355, 1) 120ms;
+    gap: 4px;
+  }
+
+  .textarea {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    background: var(--bg);
+    color: var(--secondary);
+    resize: none;
+    width: 100%;
+    outline: none;
+    padding: 11px 14px;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    min-height: 40px;
+    border-radius: 13px 7px 7px 7px;
+
+    &::placeholder {
+      color: var(--secondary);
+    }
+
+    &:focus {
+      color: var(--primary);
+    }
+  }
+
+  .ask {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    background: var(--active);
+    border-radius: 8px;
+    transition: all ease-in-out 120ms;
+    padding: 0 12px;
+    color: var(--active-text);
+    border-radius: 90px;
+    user-select: none;
+    font-size: 1.2em;
+    font-weight: 500;
+    width: 60px;
+    height: 40px;
+    transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 300ms;
+    border-radius: 7px 13px 7px 7px;
+
+    &.processing {
+      width: 75px;
+    }
+
+    .icon {
+      height: 18px;
+      width: 18px;
+    }
+
+    .spinner {
+      height: 22px;
+      width: 22px;
+      align-self: center;
+    }
+
+    &.active {
+      background: var(--bg-secondary);
+    }
+
+    &:hover {
+      cursor: pointer;
+      background: var(--active-hover);
+    }
+
+    &:active {
+      background: var(--base);
+    }
+  }
+}
+
+.answer {
+  position: fixed;
+  top: 4px;
+  left: 0;
+  width: calc(100vw - 4px);
+  height: calc(100vh - 4px);
+  color: var(--secondary);
+}
+
+.text_context {
+  font-size: 0.95em;
+  margin-top: 20px;
+  line-height: 1.45;
+  max-width: 380px;
+  opacity: 0.7;
+}
+
+.post {
+  position: relative;
+  font-size: 1rem;
+  margin-left: -15px;
+  z-index: 9;
+  pointer-events: none;
+  margin-bottom: 30px;
+}
+
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.9;
+  }
+}
+
+@keyframes contentShow {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,216 @@
+.frame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    overflow-y: overlay;
+    position: relative;
+    -webkit-app-region: drag;
+}
+
+.wrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+        135deg,
+        #0a2a8a 0%,
+        #1257d8 30%,
+        #3a78e3 60%,
+        #7fb2ff 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    opacity: 0.8;
+}
+
+.bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(10, 42, 138, 0.9) 0%,
+        rgba(18, 87, 216, 0.8) 35%,
+        rgba(58, 120, 227, 0.7) 65%,
+        rgba(127, 178, 255, 0.9) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease infinite reverse;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.card {
+    margin: 0 auto;
+    margin-top: -64px;
+    max-width: 400px;
+    background: var(--bg);
+    padding: 24px;
+    border-radius: 22px;
+    position: relative;
+    z-index: 1;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    -webkit-app-region: none;
+    user-select: none;
+
+    .name {
+        font-family: 'Porpora';
+        font-size: 1.6em;
+        text-align: center;
+        color: var(--primary);
+        margin-bottom: 32px;
+    }
+}
+
+.form {
+    -webkit-app-region: none;
+
+
+    .input {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        margin: 20px 0;
+
+
+        .des {
+            font-size: 0.8em;
+            color: var(--secondary);
+            width: 240px;
+            margin-bottom: 12px;
+
+            label {
+                display: block;
+                font-weight: 500;
+                color: var(--primary);
+                margin-bottom: 2px;
+            }
+        }
+
+
+        input {
+            border: none;
+            border-radius: 8px;
+            padding: 9px 12px;
+            line-height: 0.9;
+            outline: none;
+            font-size: 0.8em;
+            background: var(--bg-secondary);
+            color: var(--primary);
+
+            &:focus {
+                background: var(--bg-tertiary);
+            }
+        }
+
+        button {
+            display: block;
+            text-align: center;
+            font-size: 0.8em;
+            padding: 9px 12px;
+            font-weight: 500;
+            color: var(--secondary);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: none;
+            appearance: none;
+            outline: none;
+            transition: all ease-in-out 120ms;
+
+            &:hover {
+                cursor: pointer;
+                color: var(--primary);
+                background: var(--bg-tertiary);
+            }
+        }
+    }
+
+
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    -webkit-app-region: none;
+
+    .back {
+        -webkit-app-region: none;
+        display: block;
+        text-align: center;
+        font-size: 0.8em;
+        padding: 10px 18px;
+        font-weight: 500;
+        color: var(--secondary);
+        background: var(--bg-tertiary);
+        border-radius: 90px;
+        width: 100px;
+        user-select: none;
+        transition: all ease-in-out 120ms;
+        margin-right: 12px;
+
+        &:hover {
+            cursor: pointer;
+            color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        &:active {
+            color: var(--secondary);
+            background: var(--bg-tertiary);
+        }
+    }
+
+    .button {
+        -webkit-app-region: none;
+        display: block;
+        text-align: center;
+        font-size: 0.8em;
+        padding: 10px 18px;
+        font-weight: 500;
+        background: var(--active);
+        color: var(--active-text);
+        border-radius: 90px;
+        width: 200px;
+        user-select: none;
+        transition: all ease-in-out 120ms;
+
+        &:hover {
+            cursor: pointer;
+            background: var(--active-hover);
+        }
+
+        &:active {
+            color: var(--secondary);
+            background: var(--active);
+        }
+    }
+}

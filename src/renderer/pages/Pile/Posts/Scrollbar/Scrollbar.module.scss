@@ -1,0 +1,26 @@
+/* For Chrome, Safari, and Opera */
+.scrollbar::-webkit-scrollbar {
+  width: 11px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 90px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background: var(--base);
+}
+
+/* For Firefox */
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  overflow-x: hidden;
+  overflow-y: overlay;
+}

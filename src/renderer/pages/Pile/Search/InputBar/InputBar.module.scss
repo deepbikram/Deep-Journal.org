@@ -1,0 +1,161 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 3px 3px 2px 3px;
+  // border-bottom: 1px solid var(--bg-secondary);
+
+  .wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .bar {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    line-height: 1;
+    width: 100%;
+    padding: 0 15px;
+    height: 40px;
+    transition: all ease-in-out 120ms;
+    background: var(--bg-tertiary);
+    border-radius: 13px 9px 9px 9px;
+
+    &:focus-within {
+      .reflectIcon {
+        color: var(--active);
+      }
+    }
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 36px;
+
+    .ask {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      height: 100%;
+      background: var(--active);
+      transition: all ease-in-out 120ms;
+      padding: 0 12px;
+      color: var(--active-text);
+      user-select: none;
+      font-size: 1em;
+      font-weight: 450;
+      height: 40px;
+      width: 52px;
+      transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 300ms;
+      margin: 0;
+      font-size: 15px;
+      border-radius: 9px;
+
+      &.processing {
+        width: 44px;
+      }
+
+      .icon {
+        height: 18px;
+        width: 18px;
+      }
+
+      .spinner {
+        height: 22px;
+        width: 22px;
+        align-self: center;
+      }
+
+      &.active {
+        background: var(--bg-secondary);
+      }
+
+      &:hover {
+        cursor: pointer;
+        background: var(--active-hover);
+      }
+
+      &:focus {
+        cursor: pointer;
+        background: var(--active-hover);
+      }
+
+      &:active {
+        background: var(--base);
+      }
+    }
+  }
+
+  .reflectIcon {
+    height: 22px;
+    width: 22px;
+    margin-right: 12px;
+    color: var(--primary);
+    transition: all ease-in-out 120ms;
+  }
+
+  .waiting {
+    height: 23px;
+    width: 23px;
+    margin-right: 12px;
+  }
+
+  .textarea {
+    flex: 1 1 auto;
+    border: none;
+    background: none;
+    resize: none;
+    width: 100%;
+    font-size: 15px;
+    line-height: 1;
+    outline: none;
+    color: var(--primary);
+    background: none;
+
+    &::placeholder {
+      color: var(--secondary);
+    }
+  }
+
+  .close {
+    font-family: inherit;
+    border-radius: 90px;
+    height: 40px;
+    min-width: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all ease-in-out 120ms;
+    stroke-width: 2px;
+    background: var(--bg-secondary);
+    color: var(--primary);
+    border-radius: 9px 13px 9px 9px;
+
+    &:hover {
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      color: var(--secondary);
+    }
+
+    &:active {
+      color: var(--primary);
+    }
+
+    &:focus {
+      background: var(--bg-tertiary);
+    }
+
+    .icon {
+      height: 22px;
+      width: 22px;
+    }
+  }
+}
