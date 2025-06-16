@@ -45,20 +45,11 @@ const AnimatedPage = ({ children, _key = '', down = false }) => {
 
 export default function App() {
   const location = useLocation();
-  const [showLoading, setShowLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
-
-  const handleLoadingComplete = () => {
-    setShowLoading(false);
-  };
 
   const handleLoginComplete = () => {
     setShowLogin(false);
   };
-
-  if (showLoading) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
 
   if (showLogin) {
     return <LoginScreen onComplete={handleLoginComplete} />;

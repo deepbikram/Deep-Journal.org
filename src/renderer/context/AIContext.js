@@ -25,7 +25,7 @@ export const AIContextProvider = ({ children }) => {
     'pileAIProvider',
     'gemini'
   );
-  const [model, setModel] = useElectronStore('model', 'gemini-1.5-pro');
+  const [model, setModel] = useElectronStore('model', 'gemini-2.0-flash');
   const [embeddingModel, setEmbeddingModel] = useElectronStore(
     'embeddingModel',
     'text-embedding-004'
