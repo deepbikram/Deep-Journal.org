@@ -1,5 +1,5 @@
 import './App.scss';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Home from './pages/Home';
@@ -8,6 +8,7 @@ import License from './pages/License';
 import CreatePile from './pages/CreatePile';
 import LoadingScreen from './components/LoadingScreen';
 import LoginScreen from './components/LoginScreen';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { PilesContextProvider } from './context/PilesContext';
 import { IndexContextProvider } from './context/IndexContext';
 import { TagsContextProvider } from './context/TagsContext';
@@ -47,12 +48,52 @@ export default function App() {
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(true);
 
-  const handleLoginComplete = () => {
-    setShowLogin(false);
-  };
+  const handleLoginComplete = React.useCallback(() => {
+    try {
+      setShowLogin(false);
+    } catch (error) {
+      console.error('Error in handleLoginComplete:', error);
+    }
+  }, []);
 
-  if (showLogin) {
-    return <LoginScreen onComplete={handleLoginComplete} />;
+  return (
+    <AuthProvider>
+      <AppContent
+        location={location}
+        showLogin={showLogin}
+        onLoginComplete={handleLoginComplete}
+      />
+    </AuthProvider>
+  );
+}
+
+function AppContent({ location, showLogin, onLoginComplete }) {
+  const { user, loading, isAuthenticated } = useAuth();
+  const [localShowLogin, setLocalShowLogin] = useState(true);
+
+  useEffect(() => {
+    if (!loading) {
+      // If user is authenticated, hide login screen
+      if (isAuthenticated && user) {
+        setLocalShowLogin(false);
+        if (onLoginComplete) {
+          onLoginComplete();
+        }
+      } else {
+        // Show login screen if not authenticated
+        setLocalShowLogin(true);
+      }
+    }
+  }, [user, loading, isAuthenticated, onLoginComplete]);
+
+  // Show loading screen while auth is initializing
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  // Show login screen if not authenticated or forced to show login
+  if (localShowLogin || showLogin || !isAuthenticated) {
+    return <LoginScreen onComplete={onLoginComplete} />;
   }
 
   return (

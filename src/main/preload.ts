@@ -42,6 +42,9 @@ const electronHandler = {
       shell.openPath(folderPath);
     }
   },
+  openExternal: (url: string) => {
+    shell.openExternal(url);
+  },
   existsSync: (path: string) => fs.existsSync(path),
   readDir: (path: string, callback: any) => fs.readdir(path, callback),
   isDirEmpty: (path: string) =>
@@ -69,6 +72,11 @@ const electronHandler = {
   settingsGet: (key: string) => ipcRenderer.invoke('electron-store-get', key),
   settingsSet: (key: string, value: string) =>
     ipcRenderer.invoke('electron-store-set', key, value),
+  // Environment variables access for renderer process
+  env: {
+    SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL || 'https://pldjgkcisnddmzndyqbb.supabase.co',
+    SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsZGpna2Npc25kZG16bmR5cWJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3MzM1OTYsImV4cCI6MjA2NTMwOTU5Nn0.8NxJrqyFwW6CNyB8z-70B42-NcTOwVJOii7sN1L9uj4',
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
