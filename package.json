@@ -1,30 +1,30 @@
 {
   "description": "Deep Journal",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "keywords": [
     "deep journal",
     "journal",
     "reflective journaling"
   ],
-  "homepage": "https://github.com/UdaraJay/Deep-Journal",
+  "homepage": "https://github.com/deepbikram/Deep-Journal.org",
   "bugs": {
-    "url": "https://github.com/UdaraJay/Deep-Journal/issues"
+    "url": "https://github.com/deepbikram/Deep-Journal.org/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UdaraJay/Deep-Journal.git"
+    "url": "git+https://github.com/deepbikram/Deep-Journal.org.git"
   },
   "license": "MIT",
   "author": {
     "name": "Udara",
     "email": "me@udara.io",
-    "url": "https://udara.io/deep-journal"
+    "url": "https://deepbikram.com.np/Deep-Journal.org"
   },
   "contributors": [
     {
       "name": "Udara Jay",
       "email": "me@udara.io",
-      "url": "https://udara.io/deep-journal"
+      "url": "https://deepbikram.com.np/Deep-Journal.org"
     }
   ],
   "main": "./.erb/dll/main.bundle.dev.js",
@@ -47,7 +47,7 @@
     "test": "jest"
   },
   "browserslist": [
-    "extends browserslist-config-erb"
+    "electron >= 36"
   ],
   "prettier": {
     "singleQuote": true,
@@ -309,7 +309,7 @@
     "publish": {
       "provider": "github",
       "owner": "deepbikram",
-      "repo": "deep-journal.org",
+      "repo": "Deep-Journal.org",
       "releaseType": "release"
     }
   },
