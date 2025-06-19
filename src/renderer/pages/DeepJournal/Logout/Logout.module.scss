@@ -1,0 +1,42 @@
+.iconHolder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 36px;
+  border-radius: 8px;
+  transition: all ease-in-out 120ms;
+  -webkit-app-region: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-right: -2px;
+
+  .logoutIcon {
+    color: var(--secondary);
+    height: 18px;
+    width: 18px;
+    transition: all ease-in-out 220ms;
+    transition-delay: 40ms;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    background: var(--bg-secondary);
+    color: var(--primary);
+
+    .logoutIcon {
+      opacity: 1;
+      color: #ff6b6b; // Slight red tint on hover to indicate logout
+    }
+  }
+
+  &:active {
+    background: var(--bg-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary);
+  }
+}

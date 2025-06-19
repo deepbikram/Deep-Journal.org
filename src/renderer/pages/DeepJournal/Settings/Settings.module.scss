@@ -353,6 +353,112 @@ input {
   }
 }
 
+// Account Section Styles
+.accountSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--bg-tertiary);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--bg);
+}
+
+.avatarIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--secondary);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userEmail {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.userMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userName {
+  font-size: 0.8em;
+  color: var(--secondary);
+  opacity: 0.8;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 8px;
+  color: var(--secondary);
+  font-size: 0.85em;
+  font-weight: 500;
+  transition: all ease-in-out 120ms;
+  cursor: pointer;
+
+  .logoutIcon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    background: var(--base-red-light);
+    color: var(--base-red);
+    border-color: var(--base-red);
+
+    .logoutIcon {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    background: var(--base-red);
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      background: var(--bg);
+      color: var(--secondary);
+      border-color: var(--bg-tertiary);
+    }
+  }
+}
+
 @keyframes overlayShow {
   from {
     opacity: 0;

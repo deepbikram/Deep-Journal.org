@@ -13,12 +13,15 @@ const Attachments = ({
 
   if (!post) return;
 
+  const deepJournalPath = getCurrentDeepJournalPath();
+  if (!deepJournalPath) return null;
+
   return post.data.attachments.map((attachment) => {
     const image_exts = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
     const extension = attachment.split('.').pop();
     const sep = window.electron?.pathSeparator || '/';
-    const imgPath =
-      'local:' + sep + sep + getCurrentDeepJournalPath() + sep + attachment;
+    // Construct the correct path for the local protocol
+    const imgPath = `local://${deepJournalPath}${sep}${attachment}`;
 
     if (image_exts.includes(extension)) {
       return (
