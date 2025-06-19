@@ -14,6 +14,7 @@ export * from './img/TrashIcon';
 export * from './img/DownloadIcon';
 export * from './img/ColorsIcon';
 export * from './img/CrossIcon';
+export * from './img/CheckboxIcon';
 export * from './img/AudiowaveIcon';
 export * from './img/GaugeIcon';
 export * from './img/NotebookIcon';

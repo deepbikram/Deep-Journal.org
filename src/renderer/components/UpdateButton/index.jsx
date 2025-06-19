@@ -33,7 +33,7 @@ const UpdateButton = () => {
       }
       return 'Download Update';
     } else if (isChecking) {
-      return 'Checking...';
+      return 'Checking for Updates...';
     } else {
       return 'Check for Updates';
     }

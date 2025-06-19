@@ -1,6 +1,6 @@
 {
   "description": "Deep Journal",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "keywords": [
     "deep journal",
     "journal",
@@ -16,14 +16,14 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Udara",
-    "email": "me@udara.io",
+    "name": "Deep Bikram",
+    "email": "deepbikram01@gmail.com",
     "url": "https://deepbikram.com.np/Deep-Journal.org"
   },
   "contributors": [
     {
-      "name": "Udara Jay",
-      "email": "me@udara.io",
+      "name": "Deep Bikram Thapa Chhetri",
+      "email": "deepbikram01@gmail.com",
       "url": "https://deepbikram.com.np/Deep-Journal.org"
     }
   ],

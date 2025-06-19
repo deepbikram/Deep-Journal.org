@@ -1,9 +1,11 @@
 .toast {
     display: inline-flex;
-    align-items: center;
-    text-align: right;
+    align-items: flex-start;
+    text-align: left;
     font-size: 0.8rem;
-    text-wrap: nowrap;
+    white-space: pre-line;
+    max-width: 400px;
+    word-wrap: break-word;
 
     .icon {
         height: 18px;

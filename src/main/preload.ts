@@ -76,6 +76,7 @@ const electronHandler = {
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   downloadUpdate: () => ipcRenderer.invoke('download-update'),
   restartAndUpdate: () => ipcRenderer.send('restart_app'),
+  getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
   // Environment variables access for renderer process
   env: {
     SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL || 'https://pldjgkcisnddmzndyqbb.supabase.co',
