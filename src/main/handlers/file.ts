@@ -138,3 +138,9 @@ ipcMain.handle('open-file', async (event, data) => {
 
   return attachments;
 });
+
+ipcMain.handle('get-default-deep-journals-path', async (event) => {
+  const userHomeDirectoryPath = app.getPath('home');
+  const defaultDeepJournalsPath = path.join(userHomeDirectoryPath, 'Deep Journals');
+  return defaultDeepJournalsPath;
+});

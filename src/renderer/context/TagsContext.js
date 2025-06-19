@@ -16,7 +16,10 @@ export const TagsContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (currentDeepJournal) {
-      loadTags(getCurrentDeepJournalPath());
+      const path = getCurrentDeepJournalPath();
+      if (path) {
+        loadTags(path);
+      }
     }
   }, [currentDeepJournal]);
 

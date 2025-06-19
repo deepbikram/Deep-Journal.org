@@ -23,14 +23,15 @@
     width: 100%;
     background: linear-gradient(
         135deg,
-        #0a2a8a 0%,
-        #1257d8 30%,
-        #3a78e3 60%,
-        #7fb2ff 100%
+        var(--bg) 0%,
+        var(--bg-secondary) 25%,
+        var(--bg-tertiary) 50%,
+        var(--bg-secondary) 75%,
+        var(--bg) 100%
     );
     background-size: 400% 400%;
     animation: gradientShift 8s ease infinite;
-    opacity: 0.8;
+    opacity: 0.4;
 }
 
 .bg::before {
@@ -41,14 +42,31 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(
-        45deg,
-        rgba(10, 42, 138, 0.9) 0%,
-        rgba(18, 87, 216, 0.8) 35%,
-        rgba(58, 120, 227, 0.7) 65%,
-        rgba(127, 178, 255, 0.9) 100%
+        to bottom,
+        var(--brand) 0%,
+        transparent 30%,
+        transparent 70%,
+        var(--brand) 100%
     );
-    background-size: 400% 400%;
-    animation: gradientShift 10s ease infinite reverse;
+    opacity: 0.1;
+}
+
+.bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.05), transparent),
+        radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.03), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.06), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.04), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.03), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: stars 25s linear infinite;
 }
 
 @keyframes gradientShift {
@@ -63,6 +81,17 @@
     }
 }
 
+@keyframes stars {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100px);
+        opacity: 0.3;
+    }
+}
+
 .card {
     margin: 0 auto;
     margin-top: -64px;
@@ -72,6 +101,11 @@
     border-radius: 22px;
     position: relative;
     z-index: 1;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.15),
+        0 0 10px rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .header {
@@ -212,5 +246,64 @@
             color: var(--secondary);
             background: var(--active);
         }
+
+        &.ready {
+            background: linear-gradient(45deg, var(--active), #4ade80);
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+
+            &:hover {
+                background: linear-gradient(45deg, var(--active-hover), #22c55e);
+                box-shadow: 0 6px 16px rgba(74, 222, 128, 0.4);
+            }
+        }
+    }
+}
+
+.locationContainer {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.pathDisplay {
+    flex: 1;
+    padding: 9px 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+}
+
+.pathText {
+    font-size: 0.8em;
+    color: var(--primary);
+    word-break: break-all;
+    line-height: 1.2;
+}
+
+.pathPlaceholder {
+    font-size: 0.8em;
+    color: var(--secondary);
+    font-style: italic;
+}
+
+.changeLocationBtn {
+    font-size: 0.8em;
+    padding: 9px 16px;
+    font-weight: 500;
+    color: var(--secondary);
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: none;
+    appearance: none;
+    outline: none;
+    transition: all ease-in-out 120ms;
+    white-space: nowrap;
+
+    &:hover {
+        cursor: pointer;
+        color: var(--primary);
+        background: var(--bg-tertiary);
     }
 }

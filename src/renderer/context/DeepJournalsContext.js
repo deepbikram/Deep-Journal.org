@@ -74,8 +74,9 @@ export const DeepJournalsContextProvider = ({ children }) => {
   };
 
   const getCurrentDeepJournalPath = (appendPath = '') => {
-    if (!currentDeepJournal) return;
+    if (!currentDeepJournal) return null;
     const deepJournal = deepJournals.find((p) => p.name == currentDeepJournal.name);
+    if (!deepJournal) return null;
     if (!window.electron?.joinPath) {
       // Fallback path join
       return appendPath ? `${deepJournal.path}/${appendPath}` : deepJournal.path;

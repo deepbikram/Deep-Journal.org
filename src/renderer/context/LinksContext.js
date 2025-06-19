@@ -25,6 +25,10 @@ export const LinksContextProvider = ({ children }) => {
         return null;
       }
       const deepJournalPath = getCurrentDeepJournalPath();
+      if (!deepJournalPath) {
+        console.warn('No current deep journal path available, skipping link get');
+        return null;
+      }
       const preview = await window.electron.ipc.invoke(
         'links-get',
         deepJournalPath,
@@ -80,7 +84,9 @@ export const LinksContextProvider = ({ children }) => {
     async (url, data) => {
       if (window.electron?.ipc?.invoke) {
         const deepJournalPath = getCurrentDeepJournalPath();
-        window.electron.ipc.invoke('links-set', deepJournalPath, url, data);
+        if (deepJournalPath) {
+          window.electron.ipc.invoke('links-set', deepJournalPath, url, data);
+        }
       }
     },
     [currentDeepJournal]

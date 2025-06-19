@@ -29,6 +29,7 @@ export const getPost = async (postPath) => {
 export const attachToPostCreator =
   (setPost, getCurrentDeepJournalPath) => async (imageData, fileExtension) => {
     const storePath = getCurrentDeepJournalPath();
+    if (!storePath) return;
 
     let newAttachments = [];
     if (imageData) {
@@ -91,9 +92,12 @@ export const detachFromPostCreator =
 
       newPost.data.attachments = newAtt;
 
+      const basePath = getCurrentDeepJournalPath();
+      if (!basePath) return newPost;
+
       const fullPath = window.electron?.joinPath ?
-        window.electron.joinPath(getCurrentDeepJournalPath(), attachmentPath) :
-        `${getCurrentDeepJournalPath()}/${attachmentPath}`;
+        window.electron.joinPath(basePath, attachmentPath) :
+        `${basePath}/${attachmentPath}`;
 
       if (window.electron?.deleteFile) {
         window.electron.deleteFile(fullPath, (err) => {

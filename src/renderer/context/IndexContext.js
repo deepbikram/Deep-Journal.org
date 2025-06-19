@@ -94,6 +94,11 @@ export const IndexContextProvider = ({ children }) => {
       console.time('index-add-time');
       const deepJournalPath = getCurrentDeepJournalPath();
 
+      if (!deepJournalPath) {
+        console.warn('No current deep journal path available, skipping index add');
+        return;
+      }
+
       await window.electron.ipc
       .invoke('index-add', newEntryPath)
       .then((index) => {
@@ -125,8 +130,11 @@ export const IndexContextProvider = ({ children }) => {
   // Effect to load data when currentDeepJournal changes
   useEffect(() => {
     if (currentDeepJournal) {
-      loadIndex(getCurrentDeepJournalPath());
-      loadLatestThreads();
+      const path = getCurrentDeepJournalPath();
+      if (path) {
+        loadIndex(path);
+        loadLatestThreads();
+      }
     }
   }, [currentDeepJournal, loadIndex, loadLatestThreads, getCurrentDeepJournalPath]);
 

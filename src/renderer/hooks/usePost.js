@@ -51,9 +51,11 @@ function usePost(
 
   useEffect(() => {
     if (!postPath) return;
+    const basePath = getCurrentDeepJournalPath();
+    if (!basePath) return;
     const fullPath = window.electron?.joinPath ?
-      window.electron.joinPath(getCurrentDeepJournalPath(), postPath) :
-      `${getCurrentDeepJournalPath()}/${postPath}`;
+      window.electron.joinPath(basePath, postPath) :
+      `${basePath}/${postPath}`;
     setPath(fullPath);
   }, [postPath, currentDeepJournal]);
 
@@ -124,6 +126,7 @@ function usePost(
       window.electron.joinPath(...replyPostPath.split(/[/\\]/).slice(-3)) :
       replyPostPath.split(/[/\\]/).slice(-3).join('/');
     const fullParentPostPath = getCurrentDeepJournalPath(parentPostPath);
+    if (!fullParentPostPath) return;
     const parentPost = await getPost(fullParentPostPath);
     const content = parentPost.content;
     const data = {
@@ -139,10 +142,12 @@ function usePost(
   const deletePost = useCallback(async () => {
     if (!postPath) return null;
     const fullPostPath = getCurrentDeepJournalPath(postPath);
+    if (!fullPostPath) return null;
 
     // if reply, remove from parent
     if (post.data.isReply && parentPostPath) {
       const fullParentPostPath = getCurrentDeepJournalPath(parentPostPath);
+      if (!fullParentPostPath) return null;
       const parentPost = await getPost(fullParentPostPath);
       const content = parentPost.content;
       const newReplies = parentPost.data.replies.filter((p) => {

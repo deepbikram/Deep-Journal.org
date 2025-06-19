@@ -14,11 +14,20 @@ export default function CreateDeepJournal() {
   const [folderExists, setFolderExists] = useState(false);
   const [name, setName] = useState('');
   const [path, setPath] = useState('');
+  const [useDefaultLocation, setUseDefaultLocation] = useState(true);
 
   useEffect(() => {
+    // Set default location when component mounts
+    if (window.electron?.ipc?.invoke) {
+      window.electron.ipc.invoke('get-default-deep-journals-path').then((defaultPath: string) => {
+        setPath(defaultPath);
+      });
+    }
+
     if (window.electron?.ipc?.on) {
       window.electron.ipc.on('selected-directory', (path: string) => {
         setPath(path);
+        setUseDefaultLocation(false);
       });
     }
 
@@ -28,6 +37,19 @@ export default function CreateDeepJournal() {
       }
     };
   }, []);
+
+  const getDisplayPath = (fullPath: string) => {
+    if (!fullPath) return '';
+    if (useDefaultLocation) {
+      return '~/Deep Journals';
+    }
+    // For custom paths, show a shortened version
+    const pathParts = fullPath.split('/');
+    if (pathParts.length > 3) {
+      return `.../${pathParts.slice(-2).join('/')}`;
+    }
+    return fullPath;
+  };
 
   const handleNameChange = (e: any) => {
     setName(e.target.value);
@@ -91,19 +113,38 @@ export default function CreateDeepJournal() {
           <div className={styles.input}>
             <div className={styles.des}>
               <label>Location</label>
-              Pick a place to store this deep journal
+              A default location has been pre-selected for convenience, or choose your own
             </div>
 
-            <button onClick={handleClick}>
-              {path ? path : 'Choose a location'}
-            </button>
+            <div className={styles.locationContainer}>
+              <div className={styles.pathDisplay}>
+                {path ? (
+                  <span className={styles.pathText}>
+                    {useDefaultLocation && '📁 '}
+                    {getDisplayPath(path)}
+                  </span>
+                ) : (
+                  <span className={styles.pathPlaceholder}>Choose a location</span>
+                )}
+              </div>
+              <button
+                type="button"
+                className={styles.changeLocationBtn}
+                onClick={handleClick}
+              >
+                {path ? 'Change' : 'Choose'}
+              </button>
+            </div>
           </div>
         </div>
         <div className={styles.buttons}>
           <Link to="/" className={styles.back}>
             ← Back
           </Link>
-          <div className={styles.button} onClick={handleSubmit}>
+          <div
+            className={`${styles.button} ${useDefaultLocation && path && name ? styles.ready : ''}`}
+            onClick={handleSubmit}
+          >
             Create
           </div>
         </div>

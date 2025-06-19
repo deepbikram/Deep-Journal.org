@@ -25,7 +25,10 @@ export const HighlightsContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (currentDeepJournal) {
-      loadHighlights(getCurrentDeepJournalPath());
+      const path = getCurrentDeepJournalPath();
+      if (path) {
+        loadHighlights(path);
+      }
     }
   }, [currentDeepJournal]);
 
