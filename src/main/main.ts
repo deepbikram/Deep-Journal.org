@@ -45,12 +45,12 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-const setupPilesFolder = () => {
+const setupDeepJournalsFolder = () => {
   const userHomeDirectoryPath = app.getPath('home');
-  const pilesFolder = path.join(userHomeDirectoryPath, 'Piles');
+  const deepJournalsFolder = path.join(userHomeDirectoryPath, 'Deep Journals');
 
-  if (!fs.existsSync(pilesFolder)) {
-    fs.mkdirSync(pilesFolder);
+  if (!fs.existsSync(deepJournalsFolder)) {
+    fs.mkdirSync(deepJournalsFolder);
   }
 };
 
@@ -143,7 +143,7 @@ app
       return net.fetch('file://' + filePath);
     });
 
-    setupPilesFolder();
+    setupDeepJournalsFolder();
     createWindow();
 
     app.on('activate', () => {

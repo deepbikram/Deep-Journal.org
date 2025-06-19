@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Home from './pages/Home';
-import Pile from './pages/Pile';
+import DeepJournal from './pages/DeepJournal';
 import License from './pages/License';
-import CreatePile from './pages/CreatePile';
+import CreateDeepJournal from './pages/CreateDeepJournal';
 import LoadingScreen from './components/LoadingScreen';
 import LoginScreen from './components/LoginScreen';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { PilesContextProvider } from './context/PilesContext';
+import { DeepJournalsContextProvider } from './context/DeepJournalsContext';
 import { IndexContextProvider } from './context/IndexContext';
 import { TagsContextProvider } from './context/TagsContext';
 import { TimelineContextProvider } from './context/TimelineContext';
@@ -97,7 +97,7 @@ function AppContent({ location, showLogin, onLoginComplete }) {
   }
 
   return (
-    <PilesContextProvider>
+    <DeepJournalsContextProvider>
       <ToastsContextProvider>
         <AutoUpdateContextProvider>
           <AIContextProvider>
@@ -125,19 +125,19 @@ function AppContent({ location, showLogin, onLoginComplete }) {
                             }
                           />
                           <Route
-                            path="/new-pile"
+                            path="/new-deep-journal"
                             element={
-                              <AnimatedPage _key="new-pile">
-                                <CreatePile />
+                              <AnimatedPage _key="new-deep-journal">
+                                <CreateDeepJournal />
                               </AnimatedPage>
                             }
                           />
-                          <Route path="/pile">
+                          <Route path="/deep-journal">
                             <Route
-                              path=":pileName"
+                              path=":deepJournalName"
                               element={
-                                <AnimatedPage down _key="pile">
-                                  <Pile />
+                                <AnimatedPage down _key="deep-journal">
+                                  <DeepJournal />
                                 </AnimatedPage>
                               }
                             />
@@ -152,6 +152,6 @@ function AppContent({ location, showLogin, onLoginComplete }) {
           </AIContextProvider>
         </AutoUpdateContextProvider>
       </ToastsContextProvider>
-    </PilesContextProvider>
+    </DeepJournalsContextProvider>
   );
 }

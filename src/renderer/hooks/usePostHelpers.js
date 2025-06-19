@@ -27,8 +27,8 @@ export const getPost = async (postPath) => {
 };
 
 export const attachToPostCreator =
-  (setPost, getCurrentPilePath) => async (imageData, fileExtension) => {
-    const storePath = getCurrentPilePath();
+  (setPost, getCurrentDeepJournalPath) => async (imageData, fileExtension) => {
+    const storePath = getCurrentDeepJournalPath();
 
     let newAttachments = [];
     if (imageData) {
@@ -58,7 +58,7 @@ export const attachToPostCreator =
       });
     }
     // Attachments are stored relative to the base path from the
-    // base directory of the pile
+    // base directory of the deep journal
     const correctedPaths = newAttachments.map((path) => {
       const pathArr = path.split(/[/\\]/).slice(-4);
       if (!window.electron?.joinPath) {
@@ -82,7 +82,7 @@ export const attachToPostCreator =
   };
 
 export const detachFromPostCreator =
-  (setPost, getCurrentPilePath) => (attachmentPath) => {
+  (setPost, getCurrentDeepJournalPath) => (attachmentPath) => {
     setPost((post) => {
       let newPost = JSON.parse(JSON.stringify(post));
       const newAtt = newPost.data.attachments.filter(
@@ -92,8 +92,8 @@ export const detachFromPostCreator =
       newPost.data.attachments = newAtt;
 
       const fullPath = window.electron?.joinPath ?
-        window.electron.joinPath(getCurrentPilePath(), attachmentPath) :
-        `${getCurrentPilePath()}/${attachmentPath}`;
+        window.electron.joinPath(getCurrentDeepJournalPath(), attachmentPath) :
+        `${getCurrentDeepJournalPath()}/${attachmentPath}`;
 
       if (window.electron?.deleteFile) {
         window.electron.deleteFile(fullPath, (err) => {

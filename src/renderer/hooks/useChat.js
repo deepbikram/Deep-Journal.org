@@ -11,7 +11,7 @@ const useChat = () => {
       {
         role: 'system',
         content:
-          'You are a helpful assistant within a digital journaling app called Pile.',
+          'You are a helpful assistant within a digital journaling app called Deep Journal.',
       },
       {
         role: 'system',

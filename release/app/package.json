@@ -1,12 +1,12 @@
 {
-  "name": "pile",
+  "name": "deep-journal",
   "version": "1.0.0",
-  "description": "Pile: Everyday journal and thought companion.",
+  "description": "Deep Journal: Everyday journal and thought companion.",
   "license": "MIT",
   "author": {
     "name": "Udara Jay",
     "email": "me@udara.io",
-    "url": "https://udara.io/pile"
+    "url": "https://udara.io/deep-journal"
   },
   "main": "./dist/main/main.js",
   "scripts": {

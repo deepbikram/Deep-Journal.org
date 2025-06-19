@@ -1,24 +1,24 @@
 import { ipcMain } from 'electron';
-import pileTags from '../utils/pileTags';
+import deepJournalTags from '../utils/deep-journal-tags';
 
-ipcMain.handle('tags-load', (event, pilePath) => {
-  const tags = pileTags.load(pilePath);
+ipcMain.handle('tags-load', (event, deepJournalPath) => {
+  const tags = deepJournalTags.load(deepJournalPath);
   return tags;
 });
 
 ipcMain.handle('tags-get', (event) => {
-  const tags = pileTags.get();
+  const tags = deepJournalTags.get();
   return tags;
 });
 
 ipcMain.handle('tags-sync', (event, filePath) => {
-  pileTags.sync(filePath);
+  deepJournalTags.sync(filePath);
 });
 
 ipcMain.handle('tags-add', (event, { tag, filePath }) => {
-  pileTags.add(tag, filePath);
+  deepJournalTags.add(tag, filePath);
 });
 
 ipcMain.handle('tags-remove', (event, { tag, filePath }) => {
-  pileTags.remove(tag, filePath);
+  deepJournalTags.remove(tag, filePath);
 });

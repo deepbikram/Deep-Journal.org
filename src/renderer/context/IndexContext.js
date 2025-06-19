@@ -6,23 +6,23 @@ import {
   useCallback,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePilesContext } from './PilesContext';
+import { useDeepJournalsContext } from './DeepJournalsContext';
 
 export const IndexContext = createContext();
 
 export const IndexContextProvider = ({ children }) => {
-  const { currentPile, getCurrentPilePath } = usePilesContext();
+  const { currentDeepJournal, getCurrentDeepJournalPath } = useDeepJournalsContext();
   const [filters, setFilters] = useState();
   const [searchOpen, setSearchOpen] = useState(false);
   const [index, setIndex] = useState(new Map());
   const [latestThreads, setLatestThreads] = useState([]);
 
-  const loadIndex = useCallback(async (pilePath) => {
+  const loadIndex = useCallback(async (deepJournalPath) => {
     if (!window.electron?.ipc?.invoke) {
       console.warn('Electron IPC not available, skipping index load');
       return;
     }
-    const newIndex = await window.electron.ipc.invoke('index-load', pilePath);
+    const newIndex = await window.electron.ipc.invoke('index-load', deepJournalPath);
     const newMap = new Map(newIndex);
     setIndex(newMap);
   }, []);
@@ -92,7 +92,7 @@ export const IndexContextProvider = ({ children }) => {
         return;
       }
       console.time('index-add-time');
-      const pilePath = getCurrentPilePath();
+      const deepJournalPath = getCurrentDeepJournalPath();
 
       await window.electron.ipc
       .invoke('index-add', newEntryPath)
@@ -102,7 +102,7 @@ export const IndexContextProvider = ({ children }) => {
       });
       console.timeEnd('index-add-time');
     },
-    [currentPile, loadLatestThreads]
+    [currentDeepJournal, loadLatestThreads]
   );
 
   const updateIndex = useCallback(async (filePath, data) => {
@@ -122,13 +122,13 @@ export const IndexContextProvider = ({ children }) => {
     }
   }, []);
 
-  // Effect to load data when currentPile changes
+  // Effect to load data when currentDeepJournal changes
   useEffect(() => {
-    if (currentPile) {
-      loadIndex(getCurrentPilePath());
+    if (currentDeepJournal) {
+      loadIndex(getCurrentDeepJournalPath());
       loadLatestThreads();
     }
-  }, [currentPile, loadIndex, loadLatestThreads, getCurrentPilePath]);
+  }, [currentDeepJournal, loadIndex, loadLatestThreads, getCurrentDeepJournalPath]);
 
   const indexContextValue = {
     index,

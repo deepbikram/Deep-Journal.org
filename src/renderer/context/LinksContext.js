@@ -6,14 +6,14 @@ import {
   useCallback,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePilesContext } from './PilesContext';
+import { useDeepJournalsContext } from './DeepJournalsContext';
 import { useAIContext } from './AIContext';
 import { useToastsContext } from './ToastsContext';
 
 export const LinksContext = createContext();
 
 export const LinksContextProvider = ({ children }) => {
-  const { currentPile, getCurrentPilePath } = usePilesContext();
+  const { currentDeepJournal, getCurrentDeepJournalPath } = useDeepJournalsContext();
   const { ai } = useAIContext();
   const { addNotification, updateNotification, removeNotification } =
     useToastsContext();
@@ -24,10 +24,10 @@ export const LinksContextProvider = ({ children }) => {
         console.warn('Electron IPC not available, skipping link get');
         return null;
       }
-      const pilePath = getCurrentPilePath();
+      const deepJournalPath = getCurrentDeepJournalPath();
       const preview = await window.electron.ipc.invoke(
         'links-get',
-        pilePath,
+        deepJournalPath,
         url
       );
 
@@ -73,17 +73,17 @@ export const LinksContextProvider = ({ children }) => {
 
       return linkPreview;
     },
-    [currentPile]
+    [currentDeepJournal]
   );
 
   const setLink = useCallback(
     async (url, data) => {
       if (window.electron?.ipc?.invoke) {
-        const pilePath = getCurrentPilePath();
-        window.electron.ipc.invoke('links-set', pilePath, url, data);
+        const deepJournalPath = getCurrentDeepJournalPath();
+        window.electron.ipc.invoke('links-set', deepJournalPath, url, data);
       }
     },
-    [currentPile]
+    [currentDeepJournal]
   );
 
   const getPreview = async (url) => {

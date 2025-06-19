@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import styles from './License.module.scss';
 import { TrashIcon } from 'renderer/icons';
 import { Link } from 'react-router-dom';
-import { usePilesContext } from '../../context/PilesContext';
+import { useDeepJournalsContext } from '../../context/DeepJournalsContext';
 
-const pilesList = ['Users/uj/Personal', 'Users/uj/Startup', 'Users/uj/School'];
+const deepJournalsList = ['Users/uj/Personal', 'Users/uj/Startup', 'Users/uj/School'];
 
 export default function License() {
-  const { piles } = usePilesContext();
+  const { deepJournals } = useDeepJournalsContext();
   const [folderExists, setFolderExists] = useState(false);
 
   useEffect(() => {}, []);

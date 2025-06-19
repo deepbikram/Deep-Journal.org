@@ -47,7 +47,7 @@ export const AutoUpdateContextProvider = ({ children }) => {
   const handleUpdateNotAvailable = () => {
     addNotification({
       id: 'auto-update',
-      message: 'Pile is up-to-date',
+      message: 'Deep Journal is up-to-date',
       type: 'success',
       dismissTime: 5000,
       immediate: false,

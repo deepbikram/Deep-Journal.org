@@ -8,7 +8,7 @@ const axios = axiosBase.create({
 });
 
 // Setting the headers directly on the instance
-axios.defaults.headers.common['User-Agent'] = 'Mozilla/5.0 Pile/1.0';
+axios.defaults.headers.common['User-Agent'] = 'Mozilla/5.0 Deep-Journal/1.0';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export const getLinkPreview = async (url) => {

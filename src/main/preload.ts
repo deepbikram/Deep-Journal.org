@@ -31,7 +31,7 @@ const electronHandler = {
       ipcRenderer.removeListener(channel, func);
     },
   },
-  setupPilesFolder: (path: string) => {
+  setupDeepJournalsFolder: (path: string) => {
     fs.existsSync(path);
   },
   getConfigPath: () => {

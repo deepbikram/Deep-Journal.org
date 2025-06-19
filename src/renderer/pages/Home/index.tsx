@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import styles from './Home.module.scss';
 import { Link } from 'react-router-dom';
-import { usePilesContext } from '../../context/PilesContext';
-import DeletePile from './DeletePile';
+import { useDeepJournalsContext } from '../../context/DeepJournalsContext';
+import DeleteDeepJournal from './DeleteDeepJournal';
 import Logo from './logo';
-import OpenPileFolder from './OpenPileFolder';
+import OpenDeepJournalFolder from './OpenDeepJournalFolder';
 
 const quotes = [
   'One moment at a time',
@@ -18,7 +18,7 @@ const quotes = [
 ];
 
 export default function Home() {
-  const { piles } = usePilesContext();
+  const { deepJournals } = useDeepJournalsContext();
   const [folderExists, setFolderExists] = useState(false);
   const [quote, setQuote] = useState(quotes[0]);
 
@@ -27,30 +27,30 @@ export default function Home() {
     setQuote(quote);
   }, []);
 
-  const renderPiles = () => {
-    if (piles.length == 0)
+  const renderDeepJournals = () => {
+    if (deepJournals.length == 0)
       return (
-        <div className={styles.noPiles}>
-          No existing piles.
+        <div className={styles.noDeepJournals}>
+          No existing deep journals.
           <br />
-          Start by creating a new pile.
+          Start by creating a new deep journal.
         </div>
       );
 
-    return piles.map((pile: any) => {
+    return deepJournals.map((deepJournal: any) => {
       return (
         <div
-          className={`${pile.theme && pile.theme + 'Theme'} ${styles.pile}`}
-          key={pile.path}
+          className={`${deepJournal.theme && deepJournal.theme + 'Theme'} ${styles.deepJournal}`}
+          key={deepJournal.path}
         >
           <div className={styles.left}>
-            <div className={styles.name}>{pile.name}</div>
-            {/* <div className={styles.src}>{pile.path}</div> */}
+            <div className={styles.name}>{deepJournal.name}</div>
+            {/* <div className={styles.src}>{deepJournal.path}</div> */}
           </div>
           <div className={styles.right}>
-            <DeletePile pile={pile} />
-            <OpenPileFolder pile={pile} />
-            <Link to={`/pile/${pile.name}`} className={styles.button}>
+            <DeleteDeepJournal deepJournal={deepJournal} />
+            <OpenDeepJournalFolder deepJournal={deepJournal} />
+            <Link to={`/deep-journal/${deepJournal.name}`} className={styles.button}>
               Open
             </Link>
           </div>
@@ -67,20 +67,20 @@ export default function Home() {
             <div className={styles.iconHolder}>
               <Logo className={styles.icon} />
             </div>
-            <div className={styles.name}>Pile</div>
+            <div className={styles.name}>Deep Journal</div>
           </div>
         </div>
 
-        <Link to="/new-pile" className={styles.create}>
-          Create a new pile →
+        <Link to="/new-deep-journal" className={styles.create}>
+          Create a new journal →
         </Link>
 
-        <div className={styles.or}>or open an existing pile</div>
+        <div className={styles.or}>or open an existing deep journal</div>
 
-        <div className={styles.piles}>{renderPiles()}</div>
+        <div className={styles.deepJournals}>{renderDeepJournals()}</div>
 
         <div className={styles.footer}>
-          <a href="https://udara.io/pile" target="_blank">
+          <a href="https://udara.io/deep-journal" target="_blank">
             <div className={styles.unms}></div>
             {quote}
           </a>
@@ -90,14 +90,14 @@ export default function Home() {
               License
             </Link>
             <a
-              href="https://udara.io/pile"
+              href="https://udara.io/deep-journal"
               target="_blank"
               className={styles.link}
             >
               Tutorial
             </a>
             <a
-              href="https://github.com/udarajay/pile"
+              href="https://github.com/udarajay/deep-journal"
               target="_blank"
               className={styles.link}
             >

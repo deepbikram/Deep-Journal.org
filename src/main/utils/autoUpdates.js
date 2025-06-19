@@ -23,7 +23,7 @@ class AppUpdater {
     });
 
     autoUpdater.on('error', (error) => {
-        console.log('Pile auto update error');
+        console.log('Deep Journal auto update error');
         mainWindow.webContents.send('update_error', error);
     });
   }

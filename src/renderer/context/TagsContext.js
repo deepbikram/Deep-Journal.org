@@ -6,26 +6,26 @@ import {
   useCallback,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePilesContext } from './PilesContext';
+import { useDeepJournalsContext } from './DeepJournalsContext';
 
 export const TagsContext = createContext();
 
 export const TagsContextProvider = ({ children }) => {
-  const { currentPile, getCurrentPilePath } = usePilesContext();
+  const { currentDeepJournal, getCurrentDeepJournalPath } = useDeepJournalsContext();
   const [tags, setTags] = useState(new Map());
 
   useEffect(() => {
-    if (currentPile) {
-      loadTags(getCurrentPilePath());
+    if (currentDeepJournal) {
+      loadTags(getCurrentDeepJournalPath());
     }
-  }, [currentPile]);
+  }, [currentDeepJournal]);
 
-  const loadTags = useCallback(async (pilePath) => {
+  const loadTags = useCallback(async (deepJournalPath) => {
     if (!window.electron?.ipc?.invoke) {
       console.warn('Electron IPC not available, skipping tags load');
       return;
     }
-    const newTags = await window.electron.ipc.invoke('tags-load', pilePath);
+    const newTags = await window.electron.ipc.invoke('tags-load', deepJournalPath);
     const newMap = new Map(newTags);
     setTags(newMap);
   }, []);

@@ -1,20 +1,20 @@
 import { ipcMain } from 'electron';
-import pileHighlights from '../utils/pileHighlights';
+import deepJournalHighlights from '../utils/deep-journal-highlights';
 
-ipcMain.handle('highlights-load', (event, pilePath) => {
-  const highlights = pileHighlights.load(pilePath);
+ipcMain.handle('highlights-load', (event, deepJournalPath) => {
+  const highlights = deepJournalHighlights.load(deepJournalPath);
   return highlights;
 });
 
 ipcMain.handle('highlights-get', (event) => {
-  const highlights = pileHighlights.get();
+  const highlights = deepJournalHighlights.get();
   return highlights;
 });
 
 ipcMain.handle('highlights-create', (event, highlight) => {
-  pileHighlights.create(highlight);
+  deepJournalHighlights.create(highlight);
 });
 
 ipcMain.handle('highlights-delete', (event, highlight) => {
-  pileHighlights.delete(highlight);
+  deepJournalHighlights.delete(highlight);
 });

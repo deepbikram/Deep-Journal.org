@@ -6,12 +6,12 @@ import {
   useCallback,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePilesContext } from './PilesContext';
+import { useDeepJournalsContext } from './DeepJournalsContext';
 
 export const HighlightsContext = createContext();
 
 export const HighlightsContextProvider = ({ children }) => {
-  const { currentPile, getCurrentPilePath } = usePilesContext();
+  const { currentDeepJournal, getCurrentDeepJournalPath } = useDeepJournalsContext();
   const [open, setOpen] = useState(false);
   const [highlights, setHighlights] = useState(new Map());
 
@@ -24,19 +24,19 @@ export const HighlightsContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (currentPile) {
-      loadHighlights(getCurrentPilePath());
+    if (currentDeepJournal) {
+      loadHighlights(getCurrentDeepJournalPath());
     }
-  }, [currentPile]);
+  }, [currentDeepJournal]);
 
-  const loadHighlights = useCallback(async (pilePath) => {
+  const loadHighlights = useCallback(async (deepJournalPath) => {
     if (!window.electron?.ipc?.invoke) {
       console.warn('Electron IPC not available, skipping highlights load');
       return;
     }
     const newHighlights = await window.electron.ipc.invoke(
       'highlights-load',
-      pilePath
+      deepJournalPath
     );
     const newMap = new Map(newHighlights);
     setHighlights(newMap);

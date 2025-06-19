@@ -148,7 +148,7 @@
   user-select: none;
 }
 
-.noPiles {
+.noDeepJournals {
   text-align: center;
   max-width: 200px;
   margin: 0 auto;
@@ -159,7 +159,7 @@
   color: var(--secondary);
 }
 
-.piles {
+.deepJournals {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -167,7 +167,7 @@
   border-radius: 12px;
   gap: 2px;
 
-  .pile {
+  .deepJournal {
     width: 270px;
     -webkit-app-region: none;
     display: flex;

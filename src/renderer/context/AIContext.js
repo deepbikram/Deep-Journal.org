@@ -7,7 +7,7 @@ import {
 } from 'react';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { usePilesContext } from './PilesContext';
+import { useDeepJournalsContext } from './DeepJournalsContext';
 import { useElectronStore } from 'renderer/hooks/useElectronStore';
 
 const OLLAMA_URL = 'http://localhost:11434/api';
@@ -18,11 +18,11 @@ const DEFAULT_PROMPT =
 export const AIContext = createContext();
 
 export const AIContextProvider = ({ children }) => {
-  const { currentPile, updateCurrentPile } = usePilesContext();
+  const { currentDeepJournal, updateCurrentDeepJournal } = useDeepJournalsContext();
   const [ai, setAi] = useState(null);
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
-  const [pileAIProvider, setPileAIProvider] = useElectronStore(
-    'pileAIProvider',
+  const [deepJournalAIProvider, setDeepJournalAIProvider] = useElectronStore(
+    'deepJournalAIProvider',
     'gemini'
   );
   const [model, setModel] = useElectronStore('model', 'gemini-2.0-flash');
@@ -39,12 +39,12 @@ export const AIContextProvider = ({ children }) => {
     }
 
     const key = await window.electron.ipc.invoke('get-ai-key');
-    if (!key && pileAIProvider !== 'ollama') return;
+    if (!key && deepJournalAIProvider !== 'ollama') return;
 
     try {
-      if (pileAIProvider === 'ollama') {
+      if (deepJournalAIProvider === 'ollama') {
         setAi({ type: 'ollama' });
-      } else if (pileAIProvider === 'gemini') {
+      } else if (deepJournalAIProvider === 'gemini') {
         if (!key || !key.startsWith('AIza')) {
           console.error('Invalid Gemini API key format');
           return;
@@ -62,15 +62,15 @@ export const AIContextProvider = ({ children }) => {
     } catch (error) {
       console.error('Failed to setup AI provider:', error);
     }
-  }, [pileAIProvider, baseUrl]);
+  }, [deepJournalAIProvider, baseUrl]);
 
   useEffect(() => {
-    if (currentPile) {
-      console.log('🧠 Syncing current pile');
-      if (currentPile.AIPrompt) setPrompt(currentPile.AIPrompt);
+    if (currentDeepJournal) {
+      console.log('🧠 Syncing current deep journal');
+      if (currentDeepJournal.AIPrompt) setPrompt(currentDeepJournal.AIPrompt);
       setupAi();
     }
-  }, [currentPile, baseUrl, setupAi]);
+  }, [currentDeepJournal, baseUrl, setupAi]);
 
   const generateCompletion = useCallback(
     async (context, callback) => {
@@ -171,16 +171,16 @@ export const AIContextProvider = ({ children }) => {
     if (!key) return false;
 
     // Basic validation for different providers
-    if (pileAIProvider === 'gemini') {
+    if (deepJournalAIProvider === 'gemini') {
       // Gemini API keys start with 'AIza'
       return key.startsWith('AIza');
-    } else if (pileAIProvider === 'openai') {
+    } else if (deepJournalAIProvider === 'openai') {
       // OpenAI API keys start with 'sk-'
       return key.startsWith('sk-');
     }
 
     return true; // For ollama or other providers
-  }, [pileAIProvider]);
+  }, [deepJournalAIProvider]);
 
   const AIContextValue = {
     ai,
@@ -193,15 +193,15 @@ export const AIContextProvider = ({ children }) => {
     validKey: checkApiKeyValidity,
     deleteKey: () => window.electron?.ipc?.invoke ? window.electron.ipc.invoke('delete-ai-key') : Promise.resolve(),
     updateSettings: (newPrompt) =>
-      updateCurrentPile({ ...currentPile, AIPrompt: newPrompt }),
+      updateCurrentDeepJournal({ ...currentDeepJournal, AIPrompt: newPrompt }),
     model,
     setModel,
     embeddingModel,
     setEmbeddingModel,
     generateCompletion,
     prepareCompletionContext,
-    pileAIProvider,
-    setPileAIProvider,
+    deepJournalAIProvider,
+    setDeepJournalAIProvider,
   };
 
   return (

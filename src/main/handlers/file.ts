@@ -1,15 +1,15 @@
 import { ipcMain, app, dialog } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import pileHelper from '../utils/pileHelper';
+import deepJournalHelper from '../utils/deep-journal-helper';
 import matter from 'gray-matter';
 
 ipcMain.on('update-file', (event, { path, content }) => {
-  pileHelper.updateFile(path, content);
+  deepJournalHelper.updateFile(path, content);
 });
 
 ipcMain.on('change-folder', (event, newPath) => {
-  pileHelper.changeWatchFolder(newPath);
+  deepJournalHelper.changeWatchFolder(newPath);
 });
 
 ipcMain.handle('matter-parse', async (event, file) => {
@@ -27,19 +27,19 @@ ipcMain.handle('matter-stringify', async (event, { content, data }) => {
 });
 
 ipcMain.handle('get-files', async (event, dirPath) => {
-  const files = await pileHelper.getFilesInFolder(dirPath);
+  const files = await deepJournalHelper.getFilesInFolder(dirPath);
   return files;
 });
 
 ipcMain.handle('get-file', async (event, filePath) => {
-  const content = await pileHelper.getFile(filePath).catch(() => null);
+  const content = await deepJournalHelper.getFile(filePath).catch(() => null);
   return content;
 });
 
 ipcMain.on('get-config-file-path', (event) => {
   const userHomeDirectoryPath = app.getPath('home');
-  const pilesConfig = path.join(userHomeDirectoryPath, 'Piles', 'piles.json');
-  event.returnValue = pilesConfig;
+  const deepJournalsConfig = path.join(userHomeDirectoryPath, 'Deep Journals', 'deep-journals.json');
+  event.returnValue = deepJournalsConfig;
 });
 
 ipcMain.on('open-file-dialog', async (event) => {

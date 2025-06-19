@@ -55,10 +55,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Pile',
+      label: 'Deep Journal',
       submenu: [
         {
-          label: 'About Pile',
+          label: 'About Deep Journal',
           selector: 'orderFrontStandardAboutPanel:',
         },
         {
@@ -69,7 +69,7 @@ export default class MenuBuilder {
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide Pile',
+          label: 'Hide Deep Journal',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
@@ -163,7 +163,7 @@ export default class MenuBuilder {
         {
           label: 'Learn More',
           click() {
-            shell.openExternal('https://udara.io/pile');
+            shell.openExternal('https://udara.io/deep-journal');
           },
         },
       ],

@@ -1,28 +1,30 @@
 {
-  "description": "Pile",
+  "description": "Deep Journal",
   "version": "1.0.0",
   "keywords": [
-    "pile"
+    "deep journal",
+    "journal",
+    "reflective journaling"
   ],
-  "homepage": "https://github.com/UdaraJay/Pile",
+  "homepage": "https://github.com/UdaraJay/Deep-Journal",
   "bugs": {
-    "url": "https://github.com/UdaraJay/Pile/issues"
+    "url": "https://github.com/UdaraJay/Deep-Journal/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UdaraJay/Pile.git"
+    "url": "git+https://github.com/UdaraJay/Deep-Journal.git"
   },
   "license": "MIT",
   "author": {
     "name": "Udara",
     "email": "me@udara.io",
-    "url": "https://udara.io/pile"
+    "url": "https://udara.io/deep-journal"
   },
   "contributors": [
     {
       "name": "Udara Jay",
       "email": "me@udara.io",
-      "url": "https://udara.io/pile"
+      "url": "https://udara.io/deep-journal"
     }
   ],
   "main": "./.erb/dll/main.bundle.dev.js",
@@ -205,8 +207,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "Pile",
-    "appId": "pile.un.ms",
+    "productName": "Deep Journal",
+    "appId": "deep-journal.un.ms",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -247,7 +249,7 @@
       ]
     },
     "win": {
-      "publisherName": "Pile",
+      "publisherName": "Deep Journal",
       "target": [
         {
           "target": "nsis",
@@ -276,7 +278,7 @@
       {
         "provider": "github",
         "owner": "UdaraJay",
-        "repo": "Pile"
+        "repo": "Deep Journal"
       }
     ]
   },
