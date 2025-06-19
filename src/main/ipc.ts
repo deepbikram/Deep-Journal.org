@@ -6,3 +6,4 @@ import './handlers/highlights';
 import './handlers/index';
 import './handlers/links';
 import './handlers/store';
+import './handlers/updater';

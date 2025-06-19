@@ -138,9 +138,47 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    protocol.handle('local', (request) => {
-      const filePath = request.url.slice('local://'.length);
-      return net.fetch('file://' + filePath);
+    protocol.handle('local', async (request) => {
+      try {
+        const filePath = request.url.slice('local://'.length);
+        // Decode URI components to handle special characters
+        const decodedPath = decodeURIComponent(filePath);
+
+        // Check if file exists
+        if (!fs.existsSync(decodedPath)) {
+          console.error('Local protocol - File not found:', decodedPath);
+          throw new Error(`File not found: ${decodedPath}`);
+        }
+
+        // Read file and return as Response
+        const fileBuffer = fs.readFileSync(decodedPath);
+        const ext = path.extname(decodedPath).toLowerCase();
+
+        // Get appropriate MIME type
+        let mimeType = 'application/octet-stream';
+        const mimeTypes: { [key: string]: string } = {
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.png': 'image/png',
+          '.gif': 'image/gif',
+          '.svg': 'image/svg+xml',
+          '.webp': 'image/webp'
+        };
+
+        if (mimeTypes[ext]) {
+          mimeType = mimeTypes[ext];
+        }
+
+        return new Response(fileBuffer, {
+          headers: {
+            'Content-Type': mimeType,
+            'Content-Length': fileBuffer.length.toString()
+          }
+        });
+      } catch (error) {
+        console.error('Error handling local protocol:', error);
+        return new Response('File not found', { status: 404 });
+      }
     });
 
     setupDeepJournalsFolder();

@@ -208,7 +208,7 @@
   },
   "build": {
     "productName": "Deep Journal",
-    "appId": "deep-journal.un.ms",
+    "appId": "com.deepjournal.app",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -218,21 +218,28 @@
     ],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
-      "target": {
-        "target": "default",
-        "arch": [
-          "arm64",
-          "x64"
-        ]
-      },
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist",
       "gatekeeperAssess": false,
-      "publish": [
-        "github"
-      ]
+      "category": "public.app-category.productivity"
     },
     "dmg": {
       "contents": [
@@ -257,14 +264,39 @@
             "x64",
             "ia32"
           ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
         }
-      ]
+      ],
+      "certificateFile": null,
+      "certificatePassword": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
     },
     "linux": {
       "target": [
-        "AppImage"
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "category": "Development"
+      "category": "Office"
     },
     "directories": {
       "app": "release/app",
@@ -274,13 +306,12 @@
     "extraResources": [
       "./assets/**"
     ],
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "UdaraJay",
-        "repo": "Deep Journal"
-      }
-    ]
+    "publish": {
+      "provider": "github",
+      "owner": "deepbikram",
+      "repo": "deep-journal.org",
+      "releaseType": "release"
+    }
   },
   "electronmon": {
     "patterns": [

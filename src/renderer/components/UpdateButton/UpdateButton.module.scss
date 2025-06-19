@@ -1,0 +1,100 @@
+.updateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: all ease-in-out 120ms;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-app-region: no-drag;
+
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--primary);
+    border-color: var(--border-hover);
+  }
+
+  &:active {
+    background: var(--bg-secondary);
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &.checking {
+    .icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.available {
+    background: var(--blue-bg);
+    color: var(--blue-text);
+    border-color: var(--blue-border);
+
+    &:hover {
+      background: var(--blue-bg-hover);
+    }
+  }
+
+  &.ready {
+    background: var(--green-bg);
+    color: var(--green-text);
+    border-color: var(--green-border);
+
+    &:hover {
+      background: var(--green-bg-hover);
+    }
+  }
+
+  .progressBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--blue-500);
+    transition: width 0.3s ease;
+    border-radius: 0 0 8px 8px;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fallback colors if CSS variables are not available */
+:root {
+  --blue-bg: rgba(59, 130, 246, 0.1);
+  --blue-text: #3b82f6;
+  --blue-border: rgba(59, 130, 246, 0.3);
+  --blue-bg-hover: rgba(59, 130, 246, 0.15);
+  --blue-500: #3b82f6;
+
+  --green-bg: rgba(34, 197, 94, 0.1);
+  --green-text: #22c55e;
+  --green-border: rgba(34, 197, 94, 0.3);
+  --green-bg-hover: rgba(34, 197, 94, 0.15);
+}

@@ -18,10 +18,19 @@ const Attachments = ({
 
   return post.data.attachments.map((attachment) => {
     const image_exts = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-    const extension = attachment.split('.').pop();
-    const sep = window.electron?.pathSeparator || '/';
-    // Construct the correct path for the local protocol
-    const imgPath = `local://${deepJournalPath}${sep}${attachment}`;
+    const extension = attachment.split('.').pop()?.toLowerCase();
+
+    // Construct the absolute path for the local protocol
+    // The attachment is already a relative path from the deep journal base
+    let absolutePath;
+    if (window.electron?.joinPath) {
+      absolutePath = window.electron.joinPath(deepJournalPath, attachment);
+    } else {
+      const sep = window.electron?.pathSeparator || '/';
+      absolutePath = `${deepJournalPath}${sep}${attachment}`;
+    }
+
+    const imgPath = `local://${absolutePath}`;
 
     if (image_exts.includes(extension)) {
       return (
@@ -42,7 +51,16 @@ const Attachments = ({
               </div>
             )}
             <div className={styles.holder}>
-              <img src={imgPath} draggable="false" />
+              <img
+                src={imgPath}
+                draggable="false"
+                onError={(e) => {
+                  console.error('Image failed to load:', imgPath);
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully:', imgPath);
+                }}
+              />
             </div>
           </div>
         </motion.div>

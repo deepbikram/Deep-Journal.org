@@ -10,6 +10,7 @@ import {
 import AISettingTabs from './AISettingsTabs';
 import { useIndexContext } from 'renderer/context/IndexContext';
 import { useAuth } from 'renderer/context/AuthContext';
+import UpdateButton from 'renderer/components/UpdateButton';
 
 export default function Settings() {
   const { regenerateEmbeddings } = useIndexContext();
@@ -157,6 +158,13 @@ export default function Settings() {
               Appearance
             </label>
             <div className={styles.themes}>{renderThemes()}</div>
+          </fieldset>
+
+          <fieldset className={styles.Fieldset}>
+            <label className={styles.Label} htmlFor="updates">
+              Updates
+            </label>
+            <UpdateButton />
           </fieldset>
 
           <fieldset className={styles.Fieldset}>

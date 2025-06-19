@@ -14,6 +14,7 @@ import { useTimelineContext } from 'renderer/context/TimelineContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import InstallUpdate from './InstallUpdate';
 import Chat from './Chat';
+import UpdateButton from 'renderer/components/UpdateButton';
 
 export default function DeepJournalLayout({ children }) {
   const { deepJournalName } = useParams();

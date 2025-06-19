@@ -4,7 +4,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent, shell } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
-export type Channels = 'ipc-example';
+export type Channels = 'ipc-example' | 'restart_app' | 'update_checking' | 'update_available' | 'update_not_available' | 'update_downloaded' | 'update_error' | 'update_download_progress';
 
 const electronHandler = {
   ipc: {
@@ -72,6 +72,10 @@ const electronHandler = {
   settingsGet: (key: string) => ipcRenderer.invoke('electron-store-get', key),
   settingsSet: (key: string, value: string) =>
     ipcRenderer.invoke('electron-store-set', key, value),
+  // Auto-updater methods
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('download-update'),
+  restartAndUpdate: () => ipcRenderer.send('restart_app'),
   // Environment variables access for renderer process
   env: {
     SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL || 'https://pldjgkcisnddmzndyqbb.supabase.co',
