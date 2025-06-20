@@ -1,7 +1,41 @@
 
 # Deep Journal
 
-**Deep Journal: Your Private, AI-Powered Thinking Environment.**
+**Deep Journal: Your Private, AI-*   **AI Integration:** Supports OpenAI (GPT-4), Google (Gemini), and local Ollama models.
+
+## 📦 Installation
+
+### Download from GitHub Releases
+
+1. **Visit the [Latest Release](https://github.com/deepbikram/Deep-Journal.org/releases/latest)**
+2. **Choose your platform:**
+   - **macOS (Apple Silicon)**: `Deep Journal-X.X.X-arm64.dmg`
+   - **macOS (Intel)**: `Deep Journal-X.X.X.dmg`
+   - **Windows**: `Deep Journal Setup X.X.X.exe` (installer) or `Deep Journal X.X.X.exe` (portable)
+
+### macOS Installation Notes
+
+⚠️ **If you see "Deep Journal is damaged and can't be opened":**
+
+This is a normal macOS security warning for unsigned applications. Choose one of these solutions:
+
+**Quick Fix (Recommended):**
+```bash
+# Open Terminal and run:
+xattr -d com.apple.quarantine "path/to/Deep Journal-X.X.X-arm64.dmg"
+```
+
+**Alternative:** Right-click the DMG → "Open" → "Open" in the warning dialog.
+
+📖 **[See detailed installation guide](./INSTALLATION.md)** for complete instructions and troubleshooting.
+
+### System Requirements
+
+- **macOS**: 10.15 (Catalina) or later
+- **Windows**: Windows 10 or later  
+- **Linux**: Ubuntu 18.04 or equivalent
+
+## ✅ What Deep Journal Is (and Isn't) ❌ered Thinking Environment.**
 
 ## Overview
 
