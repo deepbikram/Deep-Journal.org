@@ -80,7 +80,7 @@ export default function Home() {
         <div className={styles.deepJournals}>{renderDeepJournals()}</div>
 
         <div className={styles.footer}>
-          <a href="https://udara.io/deep-journal" target="_blank">
+          <a href="https://deepbikram.com.np/Deep-Journal.org" target="_blank">
             <div className={styles.unms}></div>
             {quote}
           </a>
@@ -90,14 +90,14 @@ export default function Home() {
               License
             </Link>
             <a
-              href="https://udara.io/deep-journal"
+              href="https://deepbikram.com.np/Deep-Journal.org"
               target="_blank"
               className={styles.link}
             >
               Tutorial
             </a>
             <a
-              href="https://github.com/udarajay/deep-journal"
+              href="https://github.com/deepbikram/Deep-Journal.org"
               target="_blank"
               className={styles.link}
             >

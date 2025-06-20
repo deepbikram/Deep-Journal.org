@@ -13,6 +13,27 @@ export const AutoUpdateContextProvider = ({ children }) => {
   const [isChecking, setIsChecking] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(null);
   const [updateInfo, setUpdateInfo] = useState(null);
+  const [currentVersion, setCurrentVersion] = useState('Unknown');
+
+  // Get current version on load
+  useEffect(() => {
+    const fetchCurrentVersion = async () => {
+      try {
+        if (window.electron?.getCurrentVersion) {
+          const version = await window.electron.getCurrentVersion();
+          console.log('Fetched current version:', version);
+          setCurrentVersion(version);
+        } else {
+          console.warn('getCurrentVersion not available');
+        }
+      } catch (error) {
+        console.error('Could not get current version:', error);
+        setCurrentVersion('Unknown');
+      }
+    };
+
+    fetchCurrentVersion();
+  }, []);
 
   const handleUpdateChecking = () => {
     console.log('Update check started - setting checking state');
@@ -20,14 +41,9 @@ export const AutoUpdateContextProvider = ({ children }) => {
     setUpdateError(null);
     setUpdateNotAvailable(false);
     removeNotification('update-check-failed');
-    
-    // Show comprehensive initial status
-    addNotification({
-      id: 'update-checking',
-      type: 'info',
-      message: 'Update Check Started: Checking GitHub for the latest version...',
-      dismissTime: 15000, // Longer timeout for checking phase
-    });
+
+    // Only show notification for manual checks, not automatic ones
+    // The UI components will show the checking state
   };
 
   const handleUpdateAvailable = async (info) => {
@@ -38,28 +54,23 @@ export const AutoUpdateContextProvider = ({ children }) => {
     removeNotification('update-checking');
 
     // Get current version for clear display
-    let currentVersion = '1.2.0';
+    let displayCurrentVersion = currentVersion || 'Unknown';
     try {
-      if (window.electron?.getCurrentVersion) {
-        currentVersion = await window.electron.getCurrentVersion();
+      if (window.electron?.getCurrentVersion && (!currentVersion || currentVersion === 'Unknown')) {
+        displayCurrentVersion = await window.electron.getCurrentVersion();
+        setCurrentVersion(displayCurrentVersion);
       }
     } catch (error) {
       console.warn('Could not get current version:', error);
+      displayCurrentVersion = 'Unknown';
     }
-    
-    const newVersion = info.version;
 
-    // Show comprehensive update available status
+    // Only show notification for important updates - no excessive details
     addNotification({
-      id: 'update-available-details',
+      id: 'update-available',
       type: 'success',
-      message: `🎉 New Update Available!
-📱 Current Version: v${currentVersion}
-🆕 New Version: v${newVersion}
-📊 Status: Update ready to download
-📅 Release Date: ${info.releaseDate ? new Date(info.releaseDate).toLocaleDateString() : 'Unknown'}
-🔄 Action Required: Click 'Download Update' button`,
-      dismissTime: 12000, // Show for 12 seconds
+      message: `🎉 Update Available (v${info.version})`,
+      dismissTime: 8000,
     });
   };
 
@@ -70,15 +81,10 @@ export const AutoUpdateContextProvider = ({ children }) => {
     setUpdateInfo(info);
 
     addNotification({
-      id: 'update-downloaded-ready',
+      id: 'update-ready',
       type: 'success',
-      message: `📥 Update Downloaded Successfully!
-📱 Current Version: Will update from v1.2.0
-🆕 New Version: v${info.version}
-📊 Status: Ready to install
-🔄 Action Required: Click 'Restart to Update' to complete installation
-⚠️ Note: App will restart to apply the update`,
-      dismissTime: 15000, // Longer time for important action
+      message: `✅ Update Ready - Restart to install v${info.version}`,
+      dismissTime: 12000,
     });
   };
 
@@ -88,16 +94,12 @@ export const AutoUpdateContextProvider = ({ children }) => {
     removeNotification('update-downloading');
     removeNotification('update-checking');
 
+    // Only show error for manual checks, not automatic ones
     addNotification({
-      id: 'update-error-details',
+      id: 'update-error',
       type: 'failed',
-      message: `❌ Update Check Failed!
-📱 Current Version: v1.2.0 (unchanged)
-🌐 GitHub Status: Connection failed
-📊 Status: Update check unsuccessful
-🔄 Error: ${error.message || 'Unknown error occurred'}
-💡 Suggestion: Check internet connection and try again`,
-      dismissTime: 10000,
+      message: `❌ Update check failed: ${error.message || 'Unknown error'}`,
+      dismissTime: 6000,
     });
 
     setUpdateError(error);
@@ -109,36 +111,13 @@ export const AutoUpdateContextProvider = ({ children }) => {
     setUpdateNotAvailable(true);
     removeNotification('update-checking');
 
-    const currentVersion = info.currentVersion || '1.2.0';
-    const latestVersion = info.version || currentVersion;
-    
-    // Show comprehensive completion status
-    addNotification({
-      id: 'update-status-complete',
-      message: `✅ Update Check Complete!
-📱 Current Version: v${currentVersion}
-🌐 Latest Available: v${latestVersion}
-📊 Status: You're running the latest version
-🔄 Last Check: ${new Date().toLocaleTimeString()}`,
-      type: 'success',
-      dismissTime: 10000, // Show for 10 seconds
-    });
+    // Only show notification for manual checks, not automatic startup checks
+    // The UI components will reflect the up-to-date status
   };
 
   const handleDownloadProgress = (progress) => {
     setDownloadProgress(progress);
-    
-    // Show detailed download progress
-    addNotification({
-      id: 'download-progress-status',
-      type: 'info',
-      message: `📥 Downloading Update...
-📊 Progress: ${Math.round(progress.percent)}%
-📱 Size: ${Math.round(progress.transferred / 1024 / 1024)}MB / ${Math.round(progress.total / 1024 / 1024)}MB
-🌐 Speed: ${Math.round(progress.bytesPerSecond / 1024)}KB/s
-⏱️ Please keep the app open while downloading...`,
-      dismissTime: 2000, // Short time, will be updated frequently
-    });
+    // Progress is shown in UI components, no need for notifications
   };
 
   // Manual update check function
@@ -146,87 +125,61 @@ export const AutoUpdateContextProvider = ({ children }) => {
     if (!window.electron?.checkForUpdates) {
       console.warn('Update check not available');
       addNotification({
-        id: 'update-check-unavailable-details',
+        id: 'update-unavailable',
         type: 'failed',
-        message: `⚠️ Update Check Unavailable!
-📱 Current Version: v1.2.0 (unchanged)
-🌐 GitHub Status: API not accessible
-📊 Status: Update functionality disabled
-🔄 Reason: Update check functionality not available
-💡 Note: This may occur in development mode or restricted environments`,
-        dismissTime: 8000,
+        message: '⚠️ Update check not available in development mode',
+        dismissTime: 5000,
       });
       return;
     }
 
     try {
-      console.log('Starting update check...');
+      console.log('Starting manual update check...');
       setIsChecking(true);
       setUpdateError(null);
       setUpdateNotAvailable(false);
 
-      // Show initial checking notification with comprehensive info
-      addNotification({
-        id: 'update-checking-manual',
-        type: 'info',
-        message: `🔍 Manual Update Check Started...
-📱 Current Version: Detecting...
-🌐 Checking: GitHub Releases API
-📊 Status: Connecting to update server
-⏱️ Please wait while we check for updates...`,
-        dismissTime: 15000,
-      });
-
       const result = await window.electron.checkForUpdates();
       console.log('Update check result:', result);
 
-      // Remove checking notification
-      removeNotification('update-checking');
-      removeNotification('update-checking-manual');
-
       if (result.success) {
         // Success case is handled by the IPC event listeners
-        // (update_available, update_not_available)
-        console.log('Update check completed successfully:', result.message || 'Check completed');
+        console.log('Update check completed successfully');
+
+        // Show "up to date" notification only for manual checks
+        if (!result.updateAvailable) {
+          addNotification({
+            id: 'up-to-date',
+            type: 'success',
+            message: '✅ You\'re running the latest version',
+            dismissTime: 4000,
+          });
+        }
       } else {
         addNotification({
-          id: 'update-check-failed-details',
+          id: 'update-check-failed',
           type: 'failed',
-          message: `❌ Update Check Failed!
-📱 Current Version: v1.2.0 (unchanged)
-🌐 GitHub Status: Request failed
-📊 Status: Manual check unsuccessful
-🔄 Error: ${result.message || 'Failed to check for updates'}
-💡 Suggestion: Verify internet connection and try again`,
-          dismissTime: 10000,
+          message: `❌ Update check failed: ${result.message || 'Network error'}`,
+          dismissTime: 6000,
         });
         setUpdateError({ message: result.message || 'Update check failed' });
       }
     } catch (error) {
       console.error('Manual update check failed:', error);
-      removeNotification('update-checking');
-      removeNotification('update-checking-manual');
-      
+
       addNotification({
-        id: 'update-check-error-details',
+        id: 'update-check-error',
         type: 'failed',
-        message: `❌ Update Check Error!
-📱 Current Version: v1.2.0 (unchanged)
-🌐 GitHub Status: Connection error
-📊 Status: Network or server issue
-🔄 Error: ${error.message || 'Unknown error occurred'}
-💡 Suggestion: Check internet connection and try again later`,
-        dismissTime: 10000,
+        message: `❌ Update check error: ${error.message || 'Network error'}`,
+        dismissTime: 6000,
       });
       setUpdateError(error);
     } finally {
-      // The isChecking state will be reset by IPC event handlers
-      // or after a timeout to ensure it doesn't get stuck
       setTimeout(() => {
         setIsChecking(false);
       }, 500);
     }
-  }, [addNotification, removeNotification]);
+  }, [addNotification]);
 
   // Download update manually
   const downloadUpdate = useCallback(async () => {
@@ -242,7 +195,7 @@ export const AutoUpdateContextProvider = ({ children }) => {
           id: 'download-failed-details',
           type: 'failed',
           message: `❌ Download Failed!
-📱 Current Version: v1.2.0 (unchanged)
+📱 Current Version: Unknown (unchanged)
 🆕 Target Version: ${updateInfo?.version || 'Unknown'}
 📊 Status: Download unsuccessful
 🔄 Error: Failed to download update files
@@ -256,7 +209,7 @@ export const AutoUpdateContextProvider = ({ children }) => {
         id: 'download-error-details',
         type: 'failed',
         message: `❌ Download Error!
-📱 Current Version: v1.2.0 (unchanged)
+📱 Current Version: Unknown (unchanged)
 🆕 Target Version: ${updateInfo?.version || 'Unknown'}
 📊 Status: Download error occurred
 🔄 Error: ${error.message || 'Unknown download error'}
@@ -317,6 +270,7 @@ export const AutoUpdateContextProvider = ({ children }) => {
     isChecking,
     downloadProgress,
     updateInfo,
+    currentVersion,
     checkForUpdates,
     downloadUpdate,
     restartAndUpdate,

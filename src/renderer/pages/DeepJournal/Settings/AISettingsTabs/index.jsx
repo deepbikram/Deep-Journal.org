@@ -115,11 +115,12 @@ export default function AISettingTabs({ APIkey, setCurrentKey }) {
               </div>
             </div>
             <div className={styles.disclaimer}>
-              AI subscription for Deep Journal is provided separately by{' '}
-              <a href="https://un.ms" target="_blank">
-                UNMS
+              AI subscription is provided separately by{' '}
+              <a href="https://deepbikram.com.np" target="_blank">
+                Deep Journal.
               </a>
-              . Subject to availability and capacity limits. Fair-use policy
+              <br></br>
+               Subject to availability and capacity limits. Fair-use policy
               applies.
             </div>
           </div>

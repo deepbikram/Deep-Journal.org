@@ -53,6 +53,12 @@ export * from './img/CoinIcon';
 export * from './img/BoxOpenIcon';
 export * from './img/GeminiIcon';
 export * from './img/LogoutIcon';
+export * from './img/ShieldIcon';
+export * from './img/BellIcon';
+export * from './img/KeyIcon';
+export * from './img/EyeIcon';
+export * from './img/DatabaseIcon';
+export * from './img/HelpIcon';
 
 // logos
 export * from './logos/OllamaIcon';

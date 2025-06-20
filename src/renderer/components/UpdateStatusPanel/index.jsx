@@ -12,18 +12,11 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
     updateNotAvailable,
     updateInfo,
     downloadProgress,
+    currentVersion,
     checkForUpdates,
     downloadUpdate,
     restartAndUpdate,
   } = useAutoUpdateContext();
-
-  const getCurrentVersion = () => {
-    try {
-      return window.electron?.getCurrentVersion ? 'v1.2.0' : 'v1.2.0';
-    } catch {
-      return 'v1.2.0';
-    }
-  };
 
   const renderStatusIcon = () => {
     if (isChecking) return <RefreshIcon className={`${styles.icon} ${styles.spinning}`} />;
@@ -44,9 +37,9 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
   };
 
   const renderDetailedInfo = () => {
-    const currentVersion = getCurrentVersion();
-    const latestVersion = updateInfo?.version ? `v${updateInfo.version}` : currentVersion;
-    const releaseDate = updateInfo?.releaseDate 
+    const displayCurrentVersion = currentVersion ? `v${currentVersion}` : 'Unknown';
+    const latestVersion = updateInfo?.version ? `v${updateInfo.version}` : displayCurrentVersion;
+    const releaseDate = updateInfo?.releaseDate
       ? new Date(updateInfo.releaseDate).toLocaleDateString()
       : 'Unknown';
 
@@ -54,9 +47,9 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
       <div className={styles.details}>
         <div className={styles.versionRow}>
           <span className={styles.label}>Current Version:</span>
-          <span className={styles.value}>{currentVersion}</span>
+          <span className={styles.value}>{displayCurrentVersion}</span>
         </div>
-        
+
         <div className={styles.versionRow}>
           <span className={styles.label}>Latest Version:</span>
           <span className={styles.value}>{latestVersion}</span>
@@ -91,13 +84,13 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
               Download Progress: {Math.round(downloadProgress.percent)}%
             </div>
             <div className={styles.progressBar}>
-              <div 
+              <div
                 className={styles.progressFill}
                 style={{ width: `${downloadProgress.percent}%` }}
               />
             </div>
             <div className={styles.progressDetails}>
-              {Math.round(downloadProgress.transferred / 1024 / 1024)}MB / {Math.round(downloadProgress.total / 1024 / 1024)}MB 
+              {Math.round(downloadProgress.transferred / 1024 / 1024)}MB / {Math.round(downloadProgress.total / 1024 / 1024)}MB
               • {Math.round(downloadProgress.bytesPerSecond / 1024)}KB/s
             </div>
           </div>
@@ -114,7 +107,7 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
   const renderActionButton = () => {
     if (updateDownloaded) {
       return (
-        <button 
+        <button
           className={`${styles.actionBtn} ${styles.restart}`}
           onClick={restartAndUpdate}
         >
@@ -126,7 +119,7 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
 
     if (updateAvailable) {
       return (
-        <button 
+        <button
           className={`${styles.actionBtn} ${styles.download}`}
           onClick={downloadUpdate}
           disabled={!!downloadProgress}
@@ -138,7 +131,7 @@ const UpdateStatusPanel = ({ variant = 'default' }) => {
     }
 
     return (
-      <button 
+      <button
         className={`${styles.actionBtn} ${styles.check}`}
         onClick={checkForUpdates}
         disabled={isChecking}

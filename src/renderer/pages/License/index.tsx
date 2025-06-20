@@ -22,7 +22,7 @@ export default function License() {
       </div>
       <div className={styles.text}>
         <b>The MIT License (MIT)</b> <br />
-        <br /> Copyright (c) 2023-present Udara Jay <br />
+        <br /> Copyright (c) 2023-present Deep Bikram Thapa Chhetri <br />
         <br />
         Permission is hereby granted, free of charge, to any person obtaining a
         copy of this software and associated documentation files (the

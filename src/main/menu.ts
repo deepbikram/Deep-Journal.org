@@ -163,7 +163,7 @@ export default class MenuBuilder {
         {
           label: 'Learn More',
           click() {
-            shell.openExternal('https://udara.io/deep-journal');
+            shell.openExternal('https://deepbikram.com.np/Deep-Journal.org');
           },
         },
       ],

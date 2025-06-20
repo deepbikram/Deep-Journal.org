@@ -26,14 +26,27 @@ class AppUpdater {
     this.setupEventHandlers();
 
     // Only check for updates in production and if not in development
-    if (app.isPackaged) {
-      // Check for updates on app start (with a delay to ensure app is ready)
-      setTimeout(() => {
-        log.info('Starting automatic update check on app startup...');
-        this.checkForUpdates();
+    // Check user preference for automatic updates
+    if (app.isPackaged && process.env.AUTO_UPDATE_ON_START !== 'false') {
+      // Delay startup check to allow settings to load
+      setTimeout(async () => {
+        try {
+          // You could check user preferences here from electron-store
+          // For now, we'll make it opt-in by checking an environment variable
+          const shouldAutoCheck = process.env.ENABLE_AUTO_UPDATE_CHECK === 'true';
+
+          if (shouldAutoCheck) {
+            log.info('Starting automatic update check on app startup...');
+            this.checkForUpdates();
+          } else {
+            log.info('Automatic update check disabled by user preference or default setting');
+          }
+        } catch (error) {
+          log.error('Error checking auto-update preference:', error);
+        }
       }, 3000);
     } else {
-      log.info('Development mode - skipping automatic update check');
+      log.info('Development mode or auto-update disabled - skipping automatic update check');
     }
   }
 
@@ -91,6 +104,20 @@ class AppUpdater {
       log.info('Resetting update check flag');
       this.updateCheckInProgress = false;
       return { success: true };
+    });
+
+    // Handle auto-update preference
+    ipcMain.handle('set-auto-update-preference', (event, enabled) => {
+      log.info(`Setting auto-update preference to: ${enabled}`);
+      // For now, we'll store in a simple variable, but this could be enhanced with electron-store
+      global.autoUpdateEnabled = enabled;
+      return { success: true, enabled };
+    });
+
+    ipcMain.handle('get-auto-update-preference', () => {
+      // Return stored preference, default to false (opt-in)
+      const enabled = global.autoUpdateEnabled !== undefined ? global.autoUpdateEnabled : false;
+      return { success: true, enabled };
     });
   }
 
@@ -151,11 +178,11 @@ class AppUpdater {
   async checkForUpdates() {
     const checkId = Date.now(); // Unique ID for this check
     log.info(`[${checkId}] Update check requested. Current state: ${this.updateCheckInProgress ? 'IN_PROGRESS' : 'IDLE'}`);
-    
+
     // If a check is already in progress, wait for it to complete
     if (this.updateCheckInProgress && this.currentCheckPromise) {
       log.info(`[${checkId}] Update check already in progress, waiting for completion...`);
-      
+
       try {
         const result = await this.currentCheckPromise;
         log.info(`[${checkId}] Previous check completed, returning result:`, result);
@@ -201,36 +228,36 @@ class AppUpdater {
       if (!result) {
         const currentVersion = app.getVersion();
         log.info(`[${checkId}] No updates available - current version: ${currentVersion}`);
-        
+
         this.mainWindow.webContents.send('update_not_available', {
           version: currentVersion,
           currentVersion: currentVersion
         });
-        
-        return { 
-          success: true, 
+
+        return {
+          success: true,
           message: `You're on the latest version (v${currentVersion})`,
           checkId: checkId
         };
       }
 
       log.info(`[${checkId}] Update check completed with result`);
-      return { 
-        success: true, 
+      return {
+        success: true,
         result,
         checkId: checkId
       };
 
     } catch (error) {
       log.error(`[${checkId}] Update check error:`, error);
-      
+
       this.mainWindow.webContents.send('update_error', {
         message: error.message,
         stack: error.stack
       });
-      
-      return { 
-        success: false, 
+
+      return {
+        success: false,
         error: error.message,
         checkId: checkId
       };
