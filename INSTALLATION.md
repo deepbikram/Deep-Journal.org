@@ -1,6 +1,8 @@
-# Installation Guide for macOS
+# Installation Guide
 
-## 🚨 "App is damaged" Error Solution
+## 🚨 Security Warnings Solutions
+
+### macOS: "App is damaged" Error
 
 If you see a message saying "Deep Journal is damaged and can't be opened", this is a common macOS security feature (Gatekeeper) blocking unsigned applications. Here are several ways to resolve this:
 
@@ -41,17 +43,62 @@ sudo spctl --master-disable
 sudo spctl --master-enable
 ```
 
+### Windows: "Isn't commonly downloaded" Warning
+
+If you see a message saying "Deep Journal isn't commonly downloaded. Make sure you trust it before opening", this is Windows Defender SmartScreen protecting you from unsigned software.
+
+#### Method 1: SmartScreen Override (Recommended)
+1. **Click "Keep"** when the download warning appears in your browser
+2. **Navigate to the downloaded file** in File Explorer
+3. **Right-click the .exe file** → **Properties**
+4. **Check "Unblock"** at the bottom → **Apply** → **OK**
+5. **Double-click to run** the installer normally
+
+#### Method 2: Run Anyway
+1. **Try to run the .exe** (you'll get the SmartScreen warning)
+2. **Click "More info"** in the warning dialog
+3. **Click "Run anyway"** at the bottom
+4. **Confirm** when prompted with User Account Control
+
+#### Method 3: Disable SmartScreen Temporarily (Advanced)
+⚠️ **Use with caution - this reduces your PC's security**
+1. **Open Windows Security** → **App & browser control**
+2. **Click "Reputation-based protection settings"**
+3. **Turn off "Check apps and files"** temporarily
+4. **Install Deep Journal**
+5. **Turn protection back on**
+
+#### Method 4: Windows Defender Exception
+1. **Open Windows Security** → **Virus & threat protection**
+2. **Click "Manage settings"** under Virus & threat protection settings
+3. **Scroll down** to **"Add or remove exclusions"**
+4. **Add the Deep Journal .exe file** as an exclusion
+
 ## 📋 Which File to Download?
 
-- **Apple Silicon Macs (M1, M2, M3)**: Download `Deep Journal-1.2.2-arm64.dmg`
-- **Intel Macs**: Download `Deep Journal-1.2.2.dmg`
+### macOS
+- **Apple Silicon Macs (M1, M2, M3)**: Download `Deep Journal-1.2.3-arm64.dmg`
+- **Intel Macs**: Download `Deep Journal-1.2.3.dmg`
 - **Not sure?**: Click Apple menu → About This Mac. If you see "Apple M1/M2/M3", use ARM64 version.
+
+### Windows
+- **Most users**: Download `Deep Journal Setup 1.2.3.exe` (installer)
+- **Portable version**: Download `Deep Journal 1.2.3.exe` (no installation required)
+- **System requirements**: Windows 10 or later (both 32-bit and 64-bit supported)
 
 ## 🔒 Why This Happens
 
+### macOS Security Warning
 This security warning appears because:
 - Deep Journal is not code-signed with an Apple Developer certificate ($99/year)
 - macOS protects users from potentially malicious software
+- Open-source applications often face this limitation
+
+### Windows Security Warning
+This security warning appears because:
+- Deep Journal is not code-signed with a Windows code signing certificate ($200+/year)
+- Windows SmartScreen protects users from unrecognized software
+- New releases need time to build "reputation" in Microsoft's systems
 - Open-source applications often face this limitation
 
 ## ✅ Is It Safe?
@@ -61,13 +108,23 @@ Yes! Deep Journal is:
 - ✅ **No telemetry** - your data stays on your device
 - ✅ **Community verified** - transparent development process
 - ✅ **Regular updates** - active maintenance and security fixes
+- ✅ **Local-first** - no data sent to external servers
+- ✅ **Virus scanned** - all releases are scanned by GitHub's security systems
 
 ## 🆘 Still Having Issues?
 
-If none of these methods work:
-1. **Check your macOS version** - ensure you're running a supported version
+### macOS
+If none of the macOS methods work:
+1. **Check your macOS version** - ensure you're running a supported version (10.15+)
 2. **Try the ZIP version** instead of DMG
 3. **Open an issue** on GitHub with your macOS version and exact error message
+
+### Windows
+If none of the Windows methods work:
+1. **Check your Windows version** - ensure you're running Windows 10 or later
+2. **Try the portable version** instead of the installer
+3. **Temporarily disable antivirus** (some third-party antivirus may block it)
+4. **Open an issue** on GitHub with your Windows version and exact error message
 
 ## 🔄 Auto-Updates
 

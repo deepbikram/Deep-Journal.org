@@ -1,0 +1,453 @@
+// Compact Security Lock Screen - Application Design System
+.lockScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.welcomeCard {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+}
+
+.iconContainer {
+  margin-bottom: 20px;
+}
+
+.lockIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--active);
+  border-radius: 50%;
+  color: var(--active-text);
+  position: relative;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.welcomeContent {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 1.6em;
+  font-family: 'Porpora';
+  font-weight: 500;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--secondary);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.authContainer {
+  margin-bottom: 16px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.pinSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  position: relative;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.hiddenInput {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pinDots {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+  margin: 8px 0;
+}
+
+.pinDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &.filled {
+    background: var(--active);
+    border-color: var(--active);
+    transform: scale(1.1);
+  }
+
+  &.loading {
+    animation: pinLoading 1.5s ease-in-out infinite;
+  }
+}
+
+.loadingText {
+  margin-top: 8px;
+  font-size: 0.8em;
+  color: var(--secondary);
+  font-weight: 500;
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+.loadingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  color: var(--secondary);
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    border-top-color: var(--active);
+    animation: spin 1s ease-in-out infinite;
+  }
+}
+
+.passwordSection {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+}
+
+.passwordInput {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 500;
+  background: var(--bg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--primary);
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--secondary);
+    font-weight: 400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--active);
+    background: var(--bg-secondary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.showPasswordButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--secondary);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--primary);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+
+
+.biometricSection {
+  margin-top: 16px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  color: var(--secondary);
+  font-size: 0.8em;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  span {
+    padding: 0 12px;
+  }
+}
+
+.biometricButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85em;
+  font-weight: 500;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--active);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.errorMessage {
+  background: var(--base-red-light);
+  border: 1px solid var(--base-red);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--base-red);
+  font-size: 0.8em;
+  font-weight: 500;
+  text-align: center;
+  animation: errorShake 0.5s ease-in-out;
+}
+
+.helpText {
+  margin-top: 12px;
+  font-size: 0.8em;
+  color: var(--secondary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.forgotButton {
+  background: none;
+  border: none;
+  color: var(--active);
+  font-size: 0.8em;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--active-hover);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--active);
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--primary);
+
+  p {
+    margin: 0;
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-radius: 50%;
+  border-top-color: var(--active);
+  animation: spin 1s ease-in-out infinite;
+}
+
+// Animations
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes errorShake {
+  0%, 20%, 40%, 60%, 80%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+}
+
+@keyframes pinLoading {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .welcomeCard {
+    padding: 20px 16px;
+    border-radius: 12px;
+    max-width: 320px;
+  }
+
+  .title {
+    font-size: 1.4em;
+  }
+
+  .subtitle {
+    font-size: 0.8em;
+  }
+
+  .lockIconWrapper {
+    width: 40px;
+    height: 40px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .pinDots {
+    gap: 10px;
+  }
+
+  .pinDot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .passwordSection {
+    max-width: 200px;
+  }
+}

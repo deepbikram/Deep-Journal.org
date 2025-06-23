@@ -14,7 +14,10 @@ import {
   KeyIcon,
   EyeIcon,
   DatabaseIcon,
-  HelpIcon
+  HelpIcon,
+  FingerprintIcon,
+  CameraIcon,
+  LockIcon
 } from 'renderer/icons';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -74,6 +77,51 @@ export default function Settings() {
   // Auto-save toast notification state
   const [showAutoSaveToast, setShowAutoSaveToast] = useState(false);
 
+  // Security settings state
+  const [securitySettings, setSecuritySettings] = useState({
+    enabled: false,
+    authType: null, // 'pin' | 'password' | null
+    biometricEnabled: false,
+    biometricType: null,
+    sessionTimeout: 30
+  });
+  const [biometricAvailability, setBiometricAvailability] = useState(null);
+  const [showSecuritySetup, setShowSecuritySetup] = useState(false);
+  const [setupStep, setSetupStep] = useState('choose'); // 'choose' | 'pin' | 'password' | 'biometric' | 'questions'
+  const [pinInput, setPinInput] = useState('');
+  const [confirmPinInput, setConfirmPinInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [securityErrors, setSecurityErrors] = useState({});
+
+  // Security questions state
+  const [securityQuestion1, setSecurityQuestion1] = useState('');
+  const [securityAnswer1, setSecurityAnswer1] = useState('');
+  const [securityQuestion2, setSecurityQuestion2] = useState('');
+  const [securityAnswer2, setSecurityAnswer2] = useState('');
+
+  // Forgot password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotAnswer1, setForgotAnswer1] = useState('');
+  const [forgotAnswer2, setForgotAnswer2] = useState('');
+  const [newCredential, setNewCredential] = useState('');
+  const [confirmNewCredential, setConfirmNewCredential] = useState('');
+  const [forgotStep, setForgotStep] = useState('questions'); // 'questions' | 'reset'
+
+  // Predefined security questions
+  const securityQuestionOptions = [
+    "What was the name of your first pet?",
+    "What city were you born in?",
+    "What was your mother's maiden name?",
+    "What was the name of your elementary school?",
+    "What was your childhood nickname?",
+    "What is your favorite movie?",
+    "What was the make of your first car?",
+    "What street did you grow up on?",
+    "What was your favorite teacher's name?",
+    "What is your favorite book?"
+  ];
+
   const retrieveKey = async () => {
     const k = await getKey();
     setCurrentKey(k);
@@ -131,31 +179,42 @@ export default function Settings() {
 
   const handleOnChangeKey = (e) => {
     setCurrentKey(e.target.value);
+    setHasUnsavedChanges(true);
+    triggerAutoSave();
   };
 
   const handleOnChangePrompt = (e) => {
     const p = e.target.value ?? '';
     setPrompt(p);
+    setHasUnsavedChanges(true);
+    triggerAutoSave();
   };
 
-  // Enhanced form validation
-  const validateForm = useCallback(() => {
+  // Enhanced form validation - separated critical vs. optional validation
+  const validateForm = useCallback((criticalOnly = false) => {
     const errors = {};
 
-    if (!formData.firstName?.trim()) {
-      errors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName?.trim()) {
-      errors.lastName = 'Last name is required';
-    }
-
+    // Critical validation - only for essential fields
     if (formData.website && !isValidUrl(formData.website)) {
       errors.website = 'Please enter a valid URL';
     }
 
+    // Optional validation - for better UX but won't prevent saving
+    if (!criticalOnly) {
+      if (!formData.firstName?.trim()) {
+        errors.firstName = 'First name is recommended for a complete profile';
+      }
+
+      if (!formData.lastName?.trim()) {
+        errors.lastName = 'Last name is recommended for a complete profile';
+      }
+    }
+
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+
+    // For saving purposes, only return false if there are critical errors
+    const criticalErrors = formData.website && !isValidUrl(formData.website);
+    return !criticalErrors;
   }, [formData]);
 
   // URL validation helper
@@ -177,15 +236,15 @@ export default function Settings() {
     }
 
     autoSaveTimeoutRef.current = setTimeout(async () => {
-      if (hasUnsavedChanges && validateForm() && handleSaveRef.current) {
+      if (hasUnsavedChanges && validateForm(true) && handleSaveRef.current) { // Use critical validation only
         const success = await handleSaveRef.current(true); // Auto-save flag
         if (success) {
-          // Show auto-save toast
+          // Show auto-save toast notification
           setShowAutoSaveToast(true);
-          setTimeout(() => setShowAutoSaveToast(false), 2000);
+          setTimeout(() => setShowAutoSaveToast(false), 3000);
         }
       }
-    }, 2000); // Auto-save after 2 seconds of inactivity
+    }, 1000); // Reduced auto-save delay to 1 second for better responsiveness
   }, [hasUnsavedChanges, validateForm]);
 
   // Enhanced form data change handler
@@ -366,7 +425,8 @@ export default function Settings() {
   }, [loadSavedSettings, loadSavedAvatar]);
 
   const handleSave = useCallback(async (isAutoSave = false) => {
-    if (!validateForm()) {
+    // Use critical validation for auto-save, full validation for manual save
+    if (!validateForm(isAutoSave)) {
       console.warn('Form validation failed, cannot save');
       return false;
     }
@@ -460,19 +520,11 @@ export default function Settings() {
     handleSave();
   }, [handleSave]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts for auto-save system
   useEffect(() => {
     const handleKeydown = (e) => {
-      // Cmd/Ctrl + S to save
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
-        if (hasUnsavedChanges) {
-          handleSave();
-        }
-      }
-
-      // Escape to close if no unsaved changes
-      if (e.key === 'Escape' && !hasUnsavedChanges) {
+      // Escape to close (no need to check for unsaved changes with auto-save)
+      if (e.key === 'Escape') {
         // Close settings dialog
         const closeButton = document.querySelector('[data-settings-close]');
         if (closeButton) {
@@ -483,7 +535,7 @@ export default function Settings() {
 
     document.addEventListener('keydown', handleKeydown);
     return () => document.removeEventListener('keydown', handleKeydown);
-  }, [hasUnsavedChanges]);
+  }, []);
 
   // Cleanup auto-save timeout
   useEffect(() => {
@@ -497,6 +549,8 @@ export default function Settings() {
   const handleAutoUpdateToggle = async (e) => {
     const enabled = e.target.checked;
     setAutoUpdateEnabled(enabled);
+    setHasUnsavedChanges(true);
+    triggerAutoSave();
 
     try {
       if (window.electron?.setAutoUpdatePreference) {
@@ -541,6 +595,8 @@ export default function Settings() {
           }`}
           onClick={() => {
             setTheme(theme);
+            setHasUnsavedChanges(true);
+            triggerAutoSave();
           }}
         >
           <div
@@ -577,6 +633,11 @@ export default function Settings() {
       id: 'privacy',
       label: 'Privacy',
       icon: EyeIcon,
+    },
+    {
+      id: 'security',
+      label: 'Security',
+      icon: ShieldIcon,
     },
     {
       id: 'updates',
@@ -689,13 +750,13 @@ export default function Settings() {
                 <label className={styles.formLabel}>First Name</label>
                 <input
                   type="text"
-                  className={`${styles.formInput} ${formErrors.firstName ? styles.error : ''}`}
+                  className={styles.formInput}
                   value={formData.firstName}
                   onChange={(e) => handleFormChange('firstName', e.target.value)}
                   placeholder="Enter your first name"
                 />
                 {formErrors.firstName && (
-                  <div className={styles.errorMessage}>
+                  <div className={styles.validationHint}>
                     {formErrors.firstName}
                   </div>
                 )}
@@ -705,13 +766,13 @@ export default function Settings() {
                 <label className={styles.formLabel}>Last Name</label>
                 <input
                   type="text"
-                  className={`${styles.formInput} ${formErrors.lastName ? styles.error : ''}`}
+                  className={styles.formInput}
                   value={formData.lastName}
                   onChange={(e) => handleFormChange('lastName', e.target.value)}
                   placeholder="Enter your last name"
                 />
                 {formErrors.lastName && (
-                  <div className={styles.errorMessage}>
+                  <div className={styles.validationHint}>
                     {formErrors.lastName}
                   </div>
                 )}
@@ -1065,6 +1126,475 @@ export default function Settings() {
           </div>
         );
 
+      case 'security':
+        return (
+          <div className={styles.contentSection}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.sectionTitle}>Security</h3>
+              <p className={styles.sectionDescription}>
+                Protect your journal with PIN, password, or biometric authentication.
+              </p>
+            </div>
+
+            {!securitySettings.enabled ? (
+              // Security setup section
+              <div className={styles.securitySetup}>
+                <div className={styles.securityCard}>
+                  <div className={styles.securityIcon}>
+                    <ShieldIcon />
+                  </div>
+                  <div className={styles.securityContent}>
+                    <h4>Enable Security</h4>
+                    <p>Protect your private thoughts with secure authentication. Choose from PIN, password, or biometric options.</p>
+                  </div>
+                </div>
+
+                {!showSecuritySetup ? (
+                  <button
+                    className={styles.enableSecurityButton}
+                    onClick={() => setShowSecuritySetup(true)}
+                  >
+                    <LockIcon />
+                    Set Up Security
+                  </button>
+                ) : (
+                  <div className={styles.securitySetupFlow}>
+                    {setupStep === 'choose' && (
+                      <div className={styles.setupStep}>
+                        <h4>Choose Authentication Method</h4>
+                        <div className={styles.authOptions}>
+                          <button
+                            className={styles.authOption}
+                            onClick={() => setSetupStep('pin')}
+                          >
+                            <div className={styles.authIcon}>
+                              <LockIcon />
+                            </div>
+                            <div className={styles.authContent}>
+                              <h5>PIN</h5>
+                              <p>Quick 4-6 digit access</p>
+                            </div>
+                          </button>
+
+                          <button
+                            className={styles.authOption}
+                            onClick={() => setSetupStep('password')}
+                          >
+                            <div className={styles.authIcon}>
+                              <KeyIcon />
+                            </div>
+                            <div className={styles.authContent}>
+                              <h5>Password</h5>
+                              <p>Strong password protection</p>
+                            </div>
+                          </button>
+                        </div>
+
+                        <button
+                          className={styles.cancelButton}
+                          onClick={() => setShowSecuritySetup(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+
+                    {setupStep === 'pin' && (
+                      <div className={styles.setupStep}>
+                        <h4>Set Up PIN</h4>
+                        <div className={styles.pinSetup}>
+                          <div className={styles.formGroup}>
+                            <label>Enter PIN (4-6 digits)</label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              autoComplete="off"
+                              maxLength="6"
+                              pattern="[0-9]*"
+                              value={pinInput}
+                              onChange={(e) => {
+                                setPinInput(e.target.value.replace(/\D/g, ''));
+                                setSecurityErrors({});
+                              }}
+                              className={styles.pinInput}
+                              placeholder="Enter PIN"
+                              autoFocus
+                            />
+                          </div>
+                          <div className={styles.formGroup}>
+                            <label>Confirm PIN</label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              autoComplete="off"
+                              maxLength="6"
+                              pattern="[0-9]*"
+                              value={confirmPinInput}
+                              onChange={(e) => {
+                                setConfirmPinInput(e.target.value.replace(/\D/g, ''));
+                                setSecurityErrors({});
+                              }}
+                              className={styles.pinInput}
+                              placeholder="Confirm PIN"
+                            />
+                          </div>
+                          {securityErrors.pin && (
+                            <div className={styles.errorMessage}>
+                              {securityErrors.pin}
+                            </div>
+                          )}
+                        </div>
+                        <div className={styles.setupActions}>
+                          <button
+                            className={styles.cancelButton}
+                            onClick={() => setSetupStep('choose')}
+                          >
+                            Back
+                          </button>
+                          <button
+                            className={styles.confirmButton}
+                            onClick={handleSecuritySetup}
+                          >
+                            Enable PIN
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {setupStep === 'password' && (
+                      <div className={styles.setupStep}>
+                        <h4>Set Up Password</h4>
+                        <div className={styles.passwordSetup}>
+                          <div className={styles.formGroup}>
+                            <label>Enter Password (minimum 6 characters)</label>
+                            <input
+                              type="password"
+                              autoComplete="new-password"
+                              value={passwordInput}
+                              onChange={(e) => {
+                                setPasswordInput(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.passwordInput}
+                              placeholder="Enter password"
+                              autoFocus
+                            />
+                          </div>
+                          <div className={styles.formGroup}>
+                            <label>Confirm Password</label>
+                            <input
+                              type="password"
+                              autoComplete="new-password"
+                              value={confirmPasswordInput}
+                              onChange={(e) => {
+                                setConfirmPasswordInput(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.passwordInput}
+                              placeholder="Confirm password"
+                            />
+                          </div>
+                          {securityErrors.password && (
+                            <div className={styles.errorMessage}>
+                              {securityErrors.password}
+                            </div>
+                          )}
+                        </div>
+                        <div className={styles.setupActions}>
+                          <button
+                            className={styles.cancelButton}
+                            onClick={() => setSetupStep('choose')}
+                          >
+                            Back
+                          </button>
+                          <button
+                            className={styles.confirmButton}
+                            onClick={handleSecuritySetup}
+                          >
+                            Enable Password
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {setupStep === 'questions' && (
+                      <div className={styles.setupStep}>
+                        <h4>Set Up Security Questions</h4>
+                        <p className={styles.setupDescription}>
+                          These questions will help you recover your {pinInput ? 'PIN' : 'password'} if you forget it.
+                        </p>
+
+                        <div className={styles.questionsSetup}>
+                          <div className={styles.formGroup}>
+                            <label>Security Question 1</label>
+                            <select
+                              value={securityQuestion1}
+                              onChange={(e) => {
+                                setSecurityQuestion1(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.questionSelect}
+                            >
+                              <option value="">Select a question...</option>
+                              {securityQuestionOptions.map((question, index) => (
+                                <option key={index} value={question} disabled={question === securityQuestion2}>
+                                  {question}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className={styles.formGroup}>
+                            <label>Answer 1</label>
+                            <input
+                              type="text"
+                              value={securityAnswer1}
+                              onChange={(e) => {
+                                setSecurityAnswer1(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.answerInput}
+                              placeholder="Enter your answer"
+                            />
+                          </div>
+
+                          <div className={styles.formGroup}>
+                            <label>Security Question 2</label>
+                            <select
+                              value={securityQuestion2}
+                              onChange={(e) => {
+                                setSecurityQuestion2(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.questionSelect}
+                            >
+                              <option value="">Select a question...</option>
+                              {securityQuestionOptions.map((question, index) => (
+                                <option key={index} value={question} disabled={question === securityQuestion1}>
+                                  {question}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className={styles.formGroup}>
+                            <label>Answer 2</label>
+                            <input
+                              type="text"
+                              value={securityAnswer2}
+                              onChange={(e) => {
+                                setSecurityAnswer2(e.target.value);
+                                setSecurityErrors({});
+                              }}
+                              className={styles.answerInput}
+                              placeholder="Enter your answer"
+                            />
+                          </div>
+
+                          {securityErrors.questions && (
+                            <div className={styles.errorMessage}>
+                              {securityErrors.questions}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className={styles.setupActions}>
+                          <button
+                            className={styles.cancelButton}
+                            onClick={() => setSetupStep(pinInput ? 'pin' : 'password')}
+                          >
+                            Back
+                          </button>
+                          <button
+                            className={styles.confirmButton}
+                            onClick={handleSecuritySetup}
+                          >
+                            Complete Setup
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Security management section
+              <div className={styles.securityManagement}>
+                <div className={styles.securityStatus}>
+                  <div className={styles.statusCard}>
+                    <div className={styles.statusIcon}>
+                      <ShieldIcon className={styles.activeShield} />
+                    </div>
+                    <div className={styles.statusContent}>
+                      <h4>Security Enabled</h4>
+                      <p>Your journal is protected with {securitySettings.authType === 'pin' ? 'PIN' : 'password'} authentication</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.securityOptions}>
+                  <div className={styles.optionGroup}>
+                    <h5>Authentication Method</h5>
+                    <div className={styles.currentMethod}>
+                      <div className={styles.methodIcon}>
+                        {securitySettings.authType === 'pin' ? <LockIcon /> : <KeyIcon />}
+                      </div>
+                      <div className={styles.methodContent}>
+                        <span className={styles.methodName}>
+                          {securitySettings.authType === 'pin' ? 'PIN Protection' : 'Password Protection'}
+                        </span>
+                        <span className={styles.methodDescription}>
+                          {securitySettings.authType === 'pin'
+                            ? 'Quick numeric access'
+                            : 'Strong password security'
+                          }
+                        </span>
+                      </div>
+                      <button
+                        className={styles.changeMethodButton}
+                        onClick={() => {
+                          setShowSecuritySetup(true);
+                          setSetupStep('choose');
+                        }}
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    {/* Forgot Password/PIN section */}
+                    <div className={styles.forgotSection}>
+                      <button
+                        className={styles.forgotButton}
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        Forgot {securitySettings.authType === 'pin' ? 'PIN' : 'Password'}?
+                      </button>
+                    </div>
+                  </div>
+
+                  {biometricAvailability?.available && (
+                    <div className={styles.optionGroup}>
+                      <h5>Biometric Authentication</h5>
+                      <div className={styles.biometricOptions}>
+                        {biometricAvailability.types.map((type) => (
+                          <div key={type} className={styles.biometricOption}>
+                            <div className={styles.biometricContent}>
+                              <div className={styles.biometricIcon}>
+                                {type === 'fingerprint' && <FingerprintIcon />}
+                                {(type === 'face' || type === 'faceid') && <CameraIcon />}
+                                {type === 'touchid' && <FingerprintIcon />}
+                                {type === 'biometric' && <FingerprintIcon />}
+                              </div>
+                              <div className={styles.biometricInfo}>
+                                <span className={styles.biometricName}>
+                                  {type === 'fingerprint' && 'Fingerprint'}
+                                  {type === 'face' && 'Face Recognition'}
+                                  {type === 'faceid' && 'Face ID'}
+                                  {type === 'touchid' && 'Touch ID'}
+                                  {type === 'biometric' && 'Biometric Authentication'}
+                                </span>
+                                <span className={styles.biometricDescription}>
+                                  {type === 'biometric'
+                                    ? 'Uses system biometric authentication (Touch ID, Face ID, etc.)'
+                                    : 'Quick access with biometric authentication'
+                                  }
+                                </span>
+                              </div>
+                            </div>
+                            <div className={styles.toggleSwitch}>
+                              <input
+                                type="checkbox"
+                                id={`biometric-${type}`}
+                                className={styles.toggleInput}
+                                checked={securitySettings.biometricEnabled && securitySettings.biometricType === type}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    handleEnableBiometric(type);
+                                  } else {
+                                    handleDisableBiometric();
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`biometric-${type}`} className={styles.toggleSlider}>
+                                <span className={styles.toggleThumb}></span>
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={styles.optionGroup}>
+                    <h5>Session Settings</h5>
+                    <div className={styles.sessionOption}>
+                      <div className={styles.sessionContent}>
+                        <span className={styles.sessionLabel}>Session Timeout</span>
+                        <span className={styles.sessionDescription}>
+                          How long to stay signed in when inactive
+                        </span>
+                      </div>
+                      <select
+                        className={styles.sessionSelect}
+                        value={securitySettings.sessionTimeout}
+                        onChange={async (e) => {
+                          const timeout = parseInt(e.target.value);
+                          try {
+                            if (window.electron?.ipc?.invoke) {
+                              const success = await window.electron.ipc.invoke('set-security-settings', {
+                                sessionTimeout: timeout
+                              });
+                              if (success) {
+                                setSecuritySettings(prev => ({
+                                  ...prev,
+                                  sessionTimeout: timeout
+                                }));
+                              }
+                            }
+                          } catch (error) {
+                            console.error('Error updating session timeout:', error);
+                          }
+                        }}
+                      >
+                        <option value={5}>5 minutes</option>
+                        <option value={15}>15 minutes</option>
+                        <option value={30}>30 minutes</option>
+                        <option value={60}>1 hour</option>
+                        <option value={120}>2 hours</option>
+                        <option value={0}>Never</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className={styles.dangerZone}>
+                    <h5>Danger Zone</h5>
+                    <div className={styles.dangerAction}>
+                      <div className={styles.dangerContent}>
+                        <span className={styles.dangerLabel}>Disable Security</span>
+                        <span className={styles.dangerDescription}>
+                          Remove all security protection from your journal
+                        </span>
+                      </div>
+                      <button
+                        className={styles.dangerButton}
+                        onClick={handleDisableSecurity}
+                      >
+                        Disable
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {securityErrors.general && (
+              <div className={styles.errorMessage}>
+                {securityErrors.general}
+              </div>
+            )}
+          </div>
+        );
+
       case 'account':
         return (
           <div className={styles.contentSection}>
@@ -1167,14 +1697,14 @@ export default function Settings() {
     }
   };
 
-  // Enhanced save status component
-  const SaveStatusIndicator = () => {
+  // Enhanced auto-save status component
+  const AutoSaveStatusIndicator = () => {
     if (isSaving) {
       return (
         <div className={styles.saveStatus}>
           <span className={styles.savingIndicator}>
             <div className={styles.spinner}></div>
-            Saving...
+            Auto-saving...
           </span>
         </div>
       );
@@ -1184,7 +1714,7 @@ export default function Settings() {
       return (
         <div className={styles.saveStatus}>
           <span className={styles.savedIndicator}>
-            ✓ Saved {formatSaveTime(lastSaved)}
+            ✓ Settings saved {formatSaveTime(lastSaved)}
           </span>
         </div>
       );
@@ -1194,7 +1724,7 @@ export default function Settings() {
       return (
         <div className={styles.saveStatus}>
           <span className={styles.unsavedIndicator}>
-            ● Unsaved changes (⌘+S to save)
+            ● All changes will be saved automatically
           </span>
         </div>
       );
@@ -1202,7 +1732,7 @@ export default function Settings() {
 
     return (
       <div className={styles.saveStatus}>
-        <span>Ready to edit</span>
+        <span>Auto-save enabled • Changes save as you type</span>
       </div>
     );
   };
@@ -1225,6 +1755,279 @@ export default function Settings() {
       return 'just now';
     }
   };
+
+  // Security functions
+  const loadSecuritySettings = useCallback(async () => {
+    try {
+      if (window.electron?.ipc?.invoke) {
+        const settings = await window.electron.ipc.invoke('get-security-settings');
+        if (settings) {
+          setSecuritySettings(settings);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading security settings:', error);
+    }
+  }, []);
+
+  const checkBiometricAvailability = useCallback(async () => {
+    try {
+      if (window.electron?.ipc?.invoke) {
+        const availability = await window.electron.ipc.invoke('check-biometric-availability');
+        setBiometricAvailability(availability);
+      }
+    } catch (error) {
+      console.error('Error checking biometric availability:', error);
+    }
+  }, []);
+
+  const handleSecuritySetup = async () => {
+    try {
+      let newSettings = { ...securitySettings };
+
+      if (setupStep === 'pin') {
+        if (!pinInput || pinInput.length < 4) {
+          setSecurityErrors({ pin: 'PIN must be at least 4 digits' });
+          return;
+        }
+        if (pinInput !== confirmPinInput) {
+          setSecurityErrors({ pin: 'PINs do not match' });
+          return;
+        }
+
+        // Move to security questions step
+        setSetupStep('questions');
+        setSecurityErrors({});
+        return;
+      } else if (setupStep === 'password') {
+        if (!passwordInput || passwordInput.length < 6) {
+          setSecurityErrors({ password: 'Password must be at least 6 characters' });
+          return;
+        }
+        if (passwordInput !== confirmPasswordInput) {
+          setSecurityErrors({ password: 'Passwords do not match' });
+          return;
+        }
+
+        // Move to security questions step
+        setSetupStep('questions');
+        setSecurityErrors({});
+        return;
+      } else if (setupStep === 'questions') {
+        // Validate security questions
+        if (!securityQuestion1 || !securityAnswer1.trim()) {
+          setSecurityErrors({ questions: 'Please select and answer the first security question' });
+          return;
+        }
+        if (!securityQuestion2 || !securityAnswer2.trim()) {
+          setSecurityErrors({ questions: 'Please select and answer the second security question' });
+          return;
+        }
+        if (securityQuestion1 === securityQuestion2) {
+          setSecurityErrors({ questions: 'Please select different security questions' });
+          return;
+        }
+        if (securityAnswer1.trim().length < 2) {
+          setSecurityErrors({ questions: 'Security answers must be at least 2 characters long' });
+          return;
+        }
+        if (securityAnswer2.trim().length < 2) {
+          setSecurityErrors({ questions: 'Security answers must be at least 2 characters long' });
+          return;
+        }
+
+        // Complete setup with all data
+        if (pinInput) {
+          newSettings = {
+            ...newSettings,
+            enabled: true,
+            authType: 'pin',
+            pinHash: pinInput,
+            pinLength: pinInput.length,
+            securityQuestions: {
+              question1: securityQuestion1,
+              answer1Hash: securityAnswer1,
+              question2: securityQuestion2,
+              answer2Hash: securityAnswer2
+            }
+          };
+        } else if (passwordInput) {
+          newSettings = {
+            ...newSettings,
+            enabled: true,
+            authType: 'password',
+            passwordHash: passwordInput,
+            securityQuestions: {
+              question1: securityQuestion1,
+              answer1Hash: securityAnswer1,
+              question2: securityQuestion2,
+              answer2Hash: securityAnswer2
+            }
+          };
+        }
+      }
+
+      if (window.electron?.ipc?.invoke) {
+        const success = await window.electron.ipc.invoke('set-security-settings', newSettings);
+        if (success) {
+          setSecuritySettings(newSettings);
+          setShowSecuritySetup(false);
+          setSetupStep('choose');
+          resetSecurityForm();
+        }
+      }
+    } catch (error) {
+      console.error('Error setting up security:', error);
+      setSecurityErrors({ general: 'Failed to setup security. Please try again.' });
+    }
+  };
+
+  const handleDisableSecurity = async () => {
+    if (window.confirm('Are you sure you want to disable security? Your journal will no longer be protected.')) {
+      try {
+        const newSettings = {
+          enabled: false,
+          authType: null,
+          biometricEnabled: false,
+          biometricType: null,
+          sessionTimeout: 30
+        };
+
+        if (window.electron?.ipc?.invoke) {
+          const success = await window.electron.ipc.invoke('set-security-settings', newSettings);
+          if (success) {
+            setSecuritySettings(newSettings);
+          }
+        }
+      } catch (error) {
+        console.error('Error disabling security:', error);
+      }
+    }
+  };
+
+  // Reset security form helper
+  const resetSecurityForm = () => {
+    setPinInput('');
+    setConfirmPinInput('');
+    setPasswordInput('');
+    setConfirmPasswordInput('');
+    setSecurityQuestion1('');
+    setSecurityAnswer1('');
+    setSecurityQuestion2('');
+    setSecurityAnswer2('');
+    setSecurityErrors({});
+  };
+
+  // Forgot password functions
+  const handleForgotPassword = async () => {
+    try {
+      if (forgotStep === 'questions') {
+        if (!forgotAnswer1.trim() || !forgotAnswer2.trim()) {
+          setSecurityErrors({ forgot: 'Please answer both security questions' });
+          return;
+        }
+
+        if (window.electron?.ipc?.invoke) {
+          const isValid = await window.electron.ipc.invoke('verify-security-answers', forgotAnswer1, forgotAnswer2);
+          if (isValid) {
+            setForgotStep('reset');
+            setSecurityErrors({});
+          } else {
+            setSecurityErrors({ forgot: 'Incorrect answers. Please try again.' });
+          }
+        }
+      } else if (forgotStep === 'reset') {
+        const isPin = securitySettings.authType === 'pin';
+
+        if (isPin) {
+          if (!newCredential || newCredential.length < 4) {
+            setSecurityErrors({ forgot: 'PIN must be at least 4 digits' });
+            return;
+          }
+          if (newCredential !== confirmNewCredential) {
+            setSecurityErrors({ forgot: 'PINs do not match' });
+            return;
+          }
+        } else {
+          if (!newCredential || newCredential.length < 6) {
+            setSecurityErrors({ forgot: 'Password must be at least 6 characters' });
+            return;
+          }
+          if (newCredential !== confirmNewCredential) {
+            setSecurityErrors({ forgot: 'Passwords do not match' });
+            return;
+          }
+        }
+
+        if (window.electron?.ipc?.invoke) {
+          const success = await window.electron.ipc.invoke('reset-auth-with-security',
+            isPin ? newCredential : undefined,
+            !isPin ? newCredential : undefined
+          );
+
+          if (success) {
+            setShowForgotPassword(false);
+            setForgotStep('questions');
+            setForgotAnswer1('');
+            setForgotAnswer2('');
+            setNewCredential('');
+            setConfirmNewCredential('');
+            setSecurityErrors({});
+            // Show success message
+            alert(`${isPin ? 'PIN' : 'Password'} has been reset successfully!`);
+          } else {
+            setSecurityErrors({ forgot: 'Failed to reset. Please try again.' });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error in forgot password:', error);
+      setSecurityErrors({ forgot: 'An error occurred. Please try again.' });
+    }
+  };
+
+  const handleEnableBiometric = async (type) => {
+    try {
+      if (window.electron?.ipc?.invoke) {
+        const success = await window.electron.ipc.invoke('enable-biometric', type);
+        if (success) {
+          setSecuritySettings(prev => ({
+            ...prev,
+            biometricEnabled: true,
+            biometricType: type
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error enabling biometric:', error);
+    }
+  };
+
+  const handleDisableBiometric = async () => {
+    try {
+      if (window.electron?.ipc?.invoke) {
+        const success = await window.electron.ipc.invoke('set-security-settings', {
+          biometricEnabled: false,
+          biometricType: null
+        });
+        if (success) {
+          setSecuritySettings(prev => ({
+            ...prev,
+            biometricEnabled: false,
+            biometricType: null
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error disabling biometric:', error);
+    }
+  };
+
+  // Load security settings on mount
+  useEffect(() => {
+    loadSecuritySettings();
+    checkBiometricAvailability();
+  }, [loadSecuritySettings, checkBiometricAvailability]);
 
   return (
     <Dialog.Root>
@@ -1259,59 +2062,175 @@ export default function Settings() {
             </div>
           </div>
 
+          {/* Forgot Password/PIN Modal */}
+          {showForgotPassword && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.forgotModal}>
+                <div className={styles.modalHeader}>
+                  <h3>Reset {securitySettings.authType === 'pin' ? 'PIN' : 'Password'}</h3>
+                  <button
+                    className={styles.modalCloseButton}
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setForgotStep('questions');
+                      setForgotAnswer1('');
+                      setForgotAnswer2('');
+                      setNewCredential('');
+                      setConfirmNewCredential('');
+                      setSecurityErrors({});
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className={styles.modalContent}>
+                  {forgotStep === 'questions' ? (
+                    <div className={styles.forgotStep}>
+                      <p className={styles.forgotDescription}>
+                        Answer your security questions to reset your {securitySettings.authType === 'pin' ? 'PIN' : 'password'}.
+                      </p>
+
+                      <div className={styles.formGroup}>
+                        <label>{securitySettings.securityQuestions?.question1}</label>
+                        <input
+                          type="text"
+                          value={forgotAnswer1}
+                          onChange={(e) => {
+                            setForgotAnswer1(e.target.value);
+                            setSecurityErrors({});
+                          }}
+                          className={styles.answerInput}
+                          placeholder="Enter your answer"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>{securitySettings.securityQuestions?.question2}</label>
+                        <input
+                          type="text"
+                          value={forgotAnswer2}
+                          onChange={(e) => {
+                            setForgotAnswer2(e.target.value);
+                            setSecurityErrors({});
+                          }}
+                          className={styles.answerInput}
+                          placeholder="Enter your answer"
+                        />
+                      </div>
+
+                      {securityErrors.forgot && (
+                        <div className={styles.errorMessage}>
+                          {securityErrors.forgot}
+                        </div>
+                      )}
+
+                      <div className={styles.modalActions}>
+                        <button
+                          className={styles.cancelButton}
+                          onClick={() => {
+                            setShowForgotPassword(false);
+                            setForgotStep('questions');
+                            setForgotAnswer1('');
+                            setForgotAnswer2('');
+                            setSecurityErrors({});
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className={styles.confirmButton}
+                          onClick={handleForgotPassword}
+                        >
+                          Verify Answers
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.forgotStep}>
+                      <p className={styles.forgotDescription}>
+                        Security questions verified! Set your new {securitySettings.authType === 'pin' ? 'PIN' : 'password'}.
+                      </p>
+
+                      <div className={styles.formGroup}>
+                        <label>New {securitySettings.authType === 'pin' ? 'PIN' : 'Password'}</label>
+                        <input
+                          type={securitySettings.authType === 'pin' ? 'text' : 'password'}
+                          inputMode={securitySettings.authType === 'pin' ? 'numeric' : undefined}
+                          autoComplete="new-password"
+                          value={newCredential}
+                          onChange={(e) => {
+                            const value = securitySettings.authType === 'pin'
+                              ? e.target.value.replace(/\D/g, '')
+                              : e.target.value;
+                            setNewCredential(value);
+                            setSecurityErrors({});
+                          }}
+                          className={styles.pinInput}
+                          placeholder={`Enter new ${securitySettings.authType === 'pin' ? 'PIN' : 'password'}`}
+                          maxLength={securitySettings.authType === 'pin' ? '6' : undefined}
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Confirm {securitySettings.authType === 'pin' ? 'PIN' : 'Password'}</label>
+                        <input
+                          type={securitySettings.authType === 'pin' ? 'text' : 'password'}
+                          inputMode={securitySettings.authType === 'pin' ? 'numeric' : undefined}
+                          autoComplete="new-password"
+                          value={confirmNewCredential}
+                          onChange={(e) => {
+                            const value = securitySettings.authType === 'pin'
+                              ? e.target.value.replace(/\D/g, '')
+                              : e.target.value;
+                            setConfirmNewCredential(value);
+                            setSecurityErrors({});
+                          }}
+                          className={styles.pinInput}
+                          placeholder={`Confirm new ${securitySettings.authType === 'pin' ? 'PIN' : 'password'}`}
+                          maxLength={securitySettings.authType === 'pin' ? '6' : undefined}
+                        />
+                      </div>
+
+                      {securityErrors.forgot && (
+                        <div className={styles.errorMessage}>
+                          {securityErrors.forgot}
+                        </div>
+                      )}
+
+                      <div className={styles.modalActions}>
+                        <button
+                          className={styles.cancelButton}
+                          onClick={() => setForgotStep('questions')}
+                        >
+                          Back
+                        </button>
+                        <button
+                          className={styles.confirmButton}
+                          onClick={handleForgotPassword}
+                        >
+                          Reset {securitySettings.authType === 'pin' ? 'PIN' : 'Password'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className={styles.footer}>
             <div className={styles.footerLeft}>
-              {/* Save status indicator */}
-              <SaveStatusIndicator />
+              {/* Auto-save status indicator */}
+              <AutoSaveStatusIndicator />
             </div>
 
             <div className={styles.footerActions}>
-              <button
-                className={`${styles.footerButton} ${styles.resetButton}`}
-                onClick={() => {
-                  if (hasUnsavedChanges) {
-                    if (confirm('Are you sure you want to reset? All unsaved changes will be lost.')) {
-                      // Reset form to initial state
-                      setFormData({
-                        firstName: user?.displayName?.split(' ')[0] || '',
-                        lastName: user?.displayName?.split(' ').slice(1).join(' ') || '',
-                        about: '',
-                        website: '',
-                        pronouns: [],
-                        avatar: null,
-                      });
-                      setAvatarPreview(user?.photoURL || null);
-                      setHasUnsavedChanges(false);
-                      setFormErrors({});
-                    }
-                  }
-                }}
-                disabled={isSaving}
-              >
-                Reset
-              </button>
-
-              <button
-                className={`${styles.footerButton} ${styles.saveButton}`}
-                onClick={handleSaveChanges}
-                disabled={isSaving || !hasUnsavedChanges || Object.keys(formErrors).length > 0}
-                title="Save changes (⌘+S)"
-              >
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
-
               <Dialog.Close asChild>
                 <button
                   className={`${styles.footerButton} ${styles.closeButton}`}
                   data-settings-close
-                  onClick={() => {
-                    if (hasUnsavedChanges) {
-                      if (!confirm('You have unsaved changes. Are you sure you want to close?')) {
-                        // Prevent closing
-                        return false;
-                      }
-                    }
-                  }}
                 >
                   Close
                 </button>
@@ -1319,11 +2238,11 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* Auto-save toast notification */}
+          {/* Enhanced auto-save toast notification */}
           {showAutoSaveToast && (
             <div className={`${styles.autoSaveToast} ${showAutoSaveToast ? styles.show : ''}`}>
-              <span className={styles.toastIcon}>✓</span>
-              <span>Auto-saved</span>
+              <span className={styles.toastIcon}>💾</span>
+              <span>Changes saved automatically</span>
             </div>
           )}
         </Dialog.Content>

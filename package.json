@@ -240,8 +240,11 @@
       "entitlementsInherit": "assets/entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.productivity",
-      "identity": null,
-      "icon": "assets/icon.icns"
+      "identity": "Developer ID Application: Deep Bikram Thapa Chhetri",
+      "icon": "assets/icon.icns",
+      "notarize": {
+        "teamId": ""
+      }
     },
     "dmg": {
       "contents": [
@@ -274,8 +277,12 @@
           ]
         }
       ],
-      "certificateFile": null,
-      "certificatePassword": null
+      "certificateFile": "certs/windows-certificate.p12",
+      "certificatePassword": "",
+      "signingHashAlgorithms": ["sha256"],
+      "signAndEditExecutable": true,
+      "signDlls": true,
+      "forceCodeSigning": false
     },
     "nsis": {
       "oneClick": false,

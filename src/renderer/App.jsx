@@ -8,7 +8,9 @@ import License from './pages/License';
 import CreateDeepJournal from './pages/CreateDeepJournal';
 import LoadingScreen from './components/LoadingScreen';
 import LoginScreen from './components/LoginScreen';
+import SecurityLockScreen from './components/SecurityLockScreen';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SecurityProvider, useSecurity } from './context/SecurityContext';
 import { DeepJournalsContextProvider } from './context/DeepJournalsContext';
 import { IndexContextProvider } from './context/IndexContext';
 import { TagsContextProvider } from './context/TagsContext';
@@ -58,17 +60,20 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <AppContent
-        location={location}
-        showLogin={showLogin}
-        onLoginComplete={handleLoginComplete}
-      />
+      <SecurityProvider>
+        <AppContent
+          location={location}
+          showLogin={showLogin}
+          onLoginComplete={handleLoginComplete}
+        />
+      </SecurityProvider>
     </AuthProvider>
   );
 }
 
 function AppContent({ location, showLogin, onLoginComplete }) {
   const { user, loading, isAuthenticated } = useAuth();
+  const { isLocked, securitySettings } = useSecurity();
   const [localShowLogin, setLocalShowLogin] = useState(true);
 
   useEffect(() => {
@@ -96,6 +101,15 @@ function AppContent({ location, showLogin, onLoginComplete }) {
     return <LoginScreen onComplete={onLoginComplete} />;
   }
 
+  // Show security lock screen if security is enabled and app is locked
+  if (securitySettings?.enabled && isLocked) {
+    return <SecurityLockScreen />;
+  }
+
+  return <AppRouter location={location} />;
+}
+
+function AppRouter({ location }) {
   return (
     <DeepJournalsContextProvider>
       <ToastsContextProvider>

@@ -7,7 +7,7 @@
 :root {
   --brand: #1257d8;
   --translucent: rgba(193, 193, 193, 0.5);
-  --sidebar-width: 250px;
+  --sidebar-width: 300px;
   --nav-height: 52px;
 
   --primary: #0b0b0b;
@@ -36,7 +36,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --translucent: rgba(0, 0, 0, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 300px;
     --nav-height: 52px;
 
     --primary: #fff;
@@ -59,7 +59,7 @@
 
     /* Theme 1 */
     /* --translucent: rgba(13, 10, 35, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
 
     --primary: #ffe9ff;
@@ -86,7 +86,7 @@
 
     /* Midnight */
     /* --translucent: rgba(13, 10, 35, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
 
     --primary: #e9f3ff;
@@ -118,7 +118,7 @@
 .blueTheme {
   --brand: #1257d8;
   --translucent: rgba(162, 212, 255, 0.777);
-  --sidebar-width: 250px;
+  --sidebar-width: 280px;
   --nav-height: 52px;
   --primary: #1d2730;
   --secondary: #3c5162;
@@ -141,7 +141,7 @@
   @media (prefers-color-scheme: dark) {
     --brand: #1257d8;
     --translucent: rgba(162, 212, 255, 0.777);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
     --primary: rgb(205, 232, 255);
     --secondary: #7fb4f5;
@@ -166,7 +166,7 @@
 .purpleTheme {
   --brand: #1257d8;
   --translucent: rgba(173, 138, 193, 0.5);
-  --sidebar-width: 250px;
+  --sidebar-width: 280px;
   --nav-height: 52px;
   --primary: #57168c;
   --secondary: #794d92;
@@ -188,7 +188,7 @@
 
   @media (prefers-color-scheme: dark) {
     --translucent: rgba(13, 10, 35, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
     --primary: #ffe9ff;
     --secondary: #ab92ae;
@@ -214,7 +214,7 @@
 .yellowTheme {
   --brand: #1257d8;
   --translucent: rgba(173, 138, 193, 0.5);
-  --sidebar-width: 250px;
+  --sidebar-width: 280px;
   --nav-height: 52px;
   --primary: #412109;
   --secondary: #88511e;
@@ -236,7 +236,7 @@
 
   @media (prefers-color-scheme: dark) {
     --translucent: rgba(13, 10, 35, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
     --primary: #fff7e9;
     --secondary: #aea392;
@@ -262,7 +262,7 @@
 .greenTheme {
   --brand: #1257d8;
   --translucent: rgba(173, 138, 193, 0.5);
-  --sidebar-width: 250px;
+  --sidebar-width: 280px;
   --nav-height: 52px;
   --primary: #1b4109;
   --secondary: #306915;
@@ -284,7 +284,7 @@
 
   @media (prefers-color-scheme: dark) {
     --translucent: rgba(13, 10, 35, 0.5);
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
     --nav-height: 52px;
     --primary: #f5fff0;
     --secondary: #95ae92;

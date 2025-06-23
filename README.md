@@ -27,6 +27,18 @@ xattr -d com.apple.quarantine "path/to/Deep Journal-X.X.X-arm64.dmg"
 
 **Alternative:** Right-click the DMG → "Open" → "Open" in the warning dialog.
 
+### Windows Installation Notes
+
+⚠️ **If you see "Deep Journal isn't commonly downloaded":**
+
+This is a normal Windows SmartScreen warning for unsigned applications. Choose one of these solutions:
+
+**Quick Fix (Recommended):**
+1. Right-click the downloaded .exe → **Properties** → Check **"Unblock"** → **Apply**
+2. Double-click to run normally
+
+**Alternative:** Click **"More info"** in the warning → **"Run anyway"**
+
 📖 **[See detailed installation guide](./INSTALLATION.md)** for complete instructions and troubleshooting.
 
 ### System Requirements

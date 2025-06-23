@@ -59,6 +59,9 @@ export * from './img/KeyIcon';
 export * from './img/EyeIcon';
 export * from './img/DatabaseIcon';
 export * from './img/HelpIcon';
+export * from './img/FingerprintIcon';
+export * from './img/CameraIcon';
+export * from './img/LockIcon';
 
 // logos
 export * from './logos/OllamaIcon';

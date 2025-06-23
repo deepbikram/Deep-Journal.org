@@ -1,0 +1,558 @@
+// Modern PIN Lock Screen inspired by the welcome screen design
+.lockScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+
+  // Add floating elements for visual interest
+  &::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 20%;
+    right: 15%;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.welcomeCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 48px 40px;
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  // Subtle inner glow
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  }
+}
+
+.iconContainer {
+  margin-bottom: 32px;
+}
+
+.lockIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 8px 32px rgba(102, 126, 234, 0.3),
+    0 0 0 4px rgba(255, 255, 255, 0.1);
+  position: relative;
+
+  svg {
+    width: 36px;
+    height: 36px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  // Subtle pulse animation
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.3;
+    animation: pulse 2s ease-in-out infinite;
+    z-index: -1;
+  }
+}
+
+.welcomeContent {
+  margin-bottom: 40px;
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 16px;
+  color: #718096;
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.authContainer {
+  margin-bottom: 24px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+}
+
+.pinSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.hiddenInput {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pinDots {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.pinDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: 2px solid #cbd5e0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &.filled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    transform: scale(1.1);
+    box-shadow:
+      0 4px 12px rgba(102, 126, 234, 0.3),
+      0 0 0 3px rgba(102, 126, 234, 0.1);
+
+    // Subtle glow effect
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      opacity: 0.2;
+      z-index: -1;
+      animation: dotGlow 0.3s ease-out;
+    }
+  }
+}
+
+.passwordSection {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.passwordInput {
+  width: 100%;
+  padding: 16px 50px 16px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #2d3748;
+
+  &::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow:
+      0 0 0 3px rgba(102, 126, 234, 0.1),
+      0 4px 12px rgba(102, 126, 234, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.showPasswordButton {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #718096;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #4a5568;
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+.startButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 48px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 8px 24px rgba(102, 126, 234, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 32px rgba(102, 126, 234, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.2);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow:
+      0 4px 16px rgba(102, 126, 234, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+      box-shadow:
+        0 8px 24px rgba(102, 126, 234, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+
+      &::before {
+        left: -100%;
+      }
+    }
+  }
+}
+
+.biometricSection {
+  margin-top: 24px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: #a0aec0;
+  font-size: 14px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  }
+
+  span {
+    padding: 0 20px;
+  }
+}
+
+.biometricButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.errorMessage {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  animation: errorShake 0.5s ease-in-out;
+}
+
+.helpText {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #718096;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: white;
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+// Animations
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes dotGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes errorShake {
+  0%, 20%, 40%, 60%, 80%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .welcomeCard {
+    padding: 32px 24px;
+    border-radius: 24px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .lockIconWrapper {
+    width: 72px;
+    height: 72px;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .pinDots {
+    gap: 12px;
+  }
+
+  .pinDot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .startButton {
+    padding: 14px 36px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcomeCard {
+    padding: 28px 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+}
