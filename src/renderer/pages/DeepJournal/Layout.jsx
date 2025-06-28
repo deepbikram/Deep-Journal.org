@@ -1,6 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
 import styles from './DeepJournalLayout.module.scss';
-import { HomeIcon } from 'renderer/icons';
 import Sidebar from './Sidebar/Timeline/index';
 import { useIndexContext } from 'renderer/context/IndexContext';
 import { useEffect, useState, useMemo } from 'react';
@@ -80,18 +79,18 @@ export default function DeepJournalLayout({ children }) {
             <div className={styles.right}>
               <Toasts />
               <InstallUpdate />
-              <Chat />
-              <Search />
-              <Settings />
-              <Link to="/" className={`${styles.iconHolder}`}>
-                <HomeIcon className={styles.homeIcon} />
-              </Link>
-              {/* <HighlightsDialog /> */}
+              {/* Header buttons removed - functionality now available in vertical sidebar */}
             </div>
           </div>
           {children}
         </div>
       </div>
+
+      {/* Modal components (without header triggers) - controlled by vertical sidebar */}
+      <Chat />
+      <Search />
+      <Settings />
+
       <div id="reflections"></div>
       <div id="dialog"></div>
     </div>

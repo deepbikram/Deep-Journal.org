@@ -2032,7 +2032,7 @@ export default function Settings() {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <div className={styles.iconHolder}>
+        <div className={styles.iconHolder} data-settings-trigger>
           <SettingsIcon className={styles.settingsIcon} />
         </div>
       </Dialog.Trigger>

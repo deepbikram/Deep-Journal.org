@@ -158,7 +158,7 @@ export default function Search() {
     <>
       <Dialog.Root>
         <Dialog.Trigger asChild>
-          <div className={styles.iconHolder}>
+          <div className={styles.iconHolder} data-search-trigger>
             <SearchIcon className={styles.settingsIcon} />
           </div>
         </Dialog.Trigger>

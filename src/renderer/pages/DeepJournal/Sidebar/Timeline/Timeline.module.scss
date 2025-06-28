@@ -6,6 +6,8 @@
   user-select: none;
   position: relative;
   padding-bottom: 12px;
+  margin-left: 0; /* Space for vertical sidebar */
+  transition: margin-left 300ms ease;
 
   &::-webkit-scrollbar {
     display: none;
@@ -18,9 +20,9 @@
   position: relative;
   padding: 0 8px 0 20px;
 
-  &:nth-child(odd) {
-    // border-left: 2px solid rgba(0, 0, 0, 0.5);
-  }
+  // &:nth-child(odd) {
+  //   border-left: 2px solid rgba(0, 0, 0, 0.5);
+  // }
 
   .line {
     display: none;
@@ -128,8 +130,6 @@
       opacity: 1;
     }
 
-    .dayName {
-    }
   }
 }
 

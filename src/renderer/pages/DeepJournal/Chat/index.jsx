@@ -106,6 +106,7 @@ export default function Chat() {
           <div
             className={`${styles.iconHolder} ${!aiApiKeyValid ? styles.disabled : ''}`}
             onClick={!aiApiKeyValid ? (e) => e.preventDefault() : undefined} // Prevent click if no AI api key is set
+            data-chat-trigger
           >
             <ChatIcon className={styles.chatIcon} />
           </div>

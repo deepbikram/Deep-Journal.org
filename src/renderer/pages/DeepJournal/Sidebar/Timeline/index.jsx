@@ -5,9 +5,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import {
   useEffect,
-  useStatem,
-  useRef,
   useState,
+  useRef,
   memo,
   useMemo,
   useCallback,
@@ -15,6 +14,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTimelineContext } from 'renderer/context/TimelineContext';
 import { useIndexContext } from 'renderer/context/IndexContext';
+import VerticalSidebar from './VerticalSidebar';
 
 function isToday(date) {
   const today = new Date();
@@ -275,6 +275,7 @@ const Timeline = memo(() => {
 
   return (
     <div ref={scrollRef} className={styles.timeline}>
+      <VerticalSidebar />
       {weeks}
       <div ref={scrubRef} className={styles.scrubber}></div>
     </div>
