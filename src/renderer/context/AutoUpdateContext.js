@@ -94,12 +94,39 @@ export const AutoUpdateContextProvider = ({ children }) => {
     removeNotification('update-downloading');
     removeNotification('update-checking');
 
+    // Enhanced error handling based on error type
+    let message = '❌ Update check failed: Unknown error';
+    let dismissTime = 6000;
+    let action = null;
+
+    if (error.type === 'MISSING_RELEASE_FILES') {
+      message = '⚠️ Update server temporarily unavailable';
+      dismissTime = 8000;
+      action = {
+        label: 'Check GitHub',
+        onClick: () => {
+          if (window.electron?.openReleasesPage) {
+            window.electron.openReleasesPage();
+          }
+        }
+      };
+    } else if (error.type === 'NETWORK_ERROR') {
+      message = '🌐 Cannot connect to update server';
+      dismissTime = 6000;
+    } else if (error.type === 'NO_INTERNET') {
+      message = '📡 No internet connection available';
+      dismissTime = 5000;
+    } else {
+      message = `❌ Update check failed: ${error.message || 'Unknown error'}`;
+    }
+
     // Only show error for manual checks, not automatic ones
     addNotification({
       id: 'update-error',
       type: 'failed',
-      message: `❌ Update check failed: ${error.message || 'Unknown error'}`,
-      dismissTime: 6000,
+      message,
+      dismissTime,
+      action
     });
 
     setUpdateError(error);

@@ -119,6 +119,15 @@ class AppUpdater {
       const enabled = global.autoUpdateEnabled !== undefined ? global.autoUpdateEnabled : false;
       return { success: true, enabled };
     });
+
+    // Handle manual GitHub page opening for manual updates
+    ipcMain.handle('open-releases-page', () => {
+      const { shell } = require('electron');
+      const repoUrl = 'https://github.com/deepbikram/Deep-Journal.org/releases';
+      log.info(`Opening releases page: ${repoUrl}`);
+      shell.openExternal(repoUrl);
+      return { success: true };
+    });
   }
 
   setupEventHandlers() {
@@ -150,10 +159,30 @@ class AppUpdater {
     autoUpdater.on('error', (error) => {
       log.error('Auto updater error:', error);
       this.updateCheckInProgress = false;
-      this.mainWindow.webContents.send('update_error', {
-        message: error.message,
-        stack: error.stack
-      });
+      
+      // Check if it's the specific 404 error for missing latest-mac.yml
+      if (error.message && error.message.includes('latest-mac.yml') && error.message.includes('404')) {
+        // This is a known issue where the release files are missing
+        this.mainWindow.webContents.send('update_error', {
+          message: 'Unable to check for updates: Release metadata missing. Please check manually on GitHub.',
+          type: 'MISSING_RELEASE_FILES',
+          stack: error.stack
+        });
+      } else if (error.message && error.message.includes('HttpError: 404')) {
+        // General 404 errors - likely network or repository issues
+        this.mainWindow.webContents.send('update_error', {
+          message: 'Unable to check for updates: Network or repository error. Please try again later.',
+          type: 'NETWORK_ERROR',
+          stack: error.stack
+        });
+      } else {
+        // Other errors
+        this.mainWindow.webContents.send('update_error', {
+          message: error.message,
+          type: 'UNKNOWN_ERROR',
+          stack: error.stack
+        });
+      }
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
@@ -251,14 +280,32 @@ class AppUpdater {
     } catch (error) {
       log.error(`[${checkId}] Update check error:`, error);
 
+      // Handle specific error types
+      let errorMessage = error.message;
+      let errorType = 'UNKNOWN_ERROR';
+
+      if (error.message && error.message.includes('latest-mac.yml') && error.message.includes('404')) {
+        errorMessage = 'Unable to check for updates: The release metadata is missing from GitHub. This is a temporary issue that will be resolved in the next release.';
+        errorType = 'MISSING_RELEASE_FILES';
+      } else if (error.message && error.message.includes('HttpError: 404')) {
+        errorMessage = 'Unable to check for updates: Could not connect to update server. Please check your internet connection and try again.';
+        errorType = 'NETWORK_ERROR';
+      } else if (error.message && error.message.includes('ENOTFOUND')) {
+        errorMessage = 'Unable to check for updates: No internet connection available.';
+        errorType = 'NO_INTERNET';
+      }
+
       this.mainWindow.webContents.send('update_error', {
-        message: error.message,
+        message: errorMessage,
+        type: errorType,
+        originalError: error.message,
         stack: error.stack
       });
 
       return {
         success: false,
-        error: error.message,
+        error: errorMessage,
+        type: errorType,
         checkId: checkId
       };
     }

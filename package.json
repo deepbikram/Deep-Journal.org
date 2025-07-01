@@ -1,6 +1,6 @@
 {
   "description": "Deep Journal",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "keywords": [
     "deep journal",
     "journal",
@@ -33,7 +33,7 @@
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" webpack --config ./.erb/configs/webpack.config.main.prod.ts",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-    "postinstall": "NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && pnpm run build:dll",
+    "_postinstall": "NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && pnpm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "package": "NODE_OPTIONS=\"--disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON\" ts-node ./.erb/scripts/clean.js dist && pnpm run build && electron-builder build --mac --win --publish never && pnpm run build:dll",
@@ -240,11 +240,7 @@
       "entitlementsInherit": "assets/entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.productivity",
-      "identity": "Developer ID Application: Deep Bikram Thapa Chhetri",
-      "icon": "assets/icon.icns",
-      "notarize": {
-        "teamId": ""
-      }
+      "icon": "assets/icon.icns"
     },
     "dmg": {
       "contents": [
@@ -276,13 +272,7 @@
             "x64"
           ]
         }
-      ],
-      "certificateFile": "certs/windows-certificate.p12",
-      "certificatePassword": "",
-      "signingHashAlgorithms": ["sha256"],
-      "signAndEditExecutable": true,
-      "signDlls": true,
-      "forceCodeSigning": false
+      ]
     },
     "nsis": {
       "oneClick": false,
