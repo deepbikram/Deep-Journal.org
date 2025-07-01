@@ -5,6 +5,7 @@ import { useIndexContext } from 'renderer/context/IndexContext';
 import { useEffect, useState, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import Settings from './Settings';
+import Help from './Help';
 import HighlightsDialog from './Highlights';
 import { useDeepJournalsContext } from 'renderer/context/DeepJournalsContext';
 import Toasts from './Toasts';
@@ -90,6 +91,7 @@ export default function DeepJournalLayout({ children }) {
       <Chat />
       <Search />
       <Settings />
+      <Help />
 
       <div id="reflections"></div>
       <div id="dialog"></div>

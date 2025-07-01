@@ -41,21 +41,41 @@ export default function VerticalSidebar() {
       selector: '[data-settings-trigger]'
     },
     {
-      id: 'profile',
+      id: 'account',
       icon: PersonIcon,
-      title: 'Profile',
-      action: 'disabled'
+      title: 'Account',
+      action: 'trigger',
+      selector: '[data-settings-trigger]'
     },
     {
       id: 'help',
       icon: HelpIcon,
       title: 'Help',
-      action: 'disabled'
+      action: 'trigger',
+      selector: '[data-help-trigger]'
     }
   ];
 
   const handleButtonClick = (button) => {
     if (button.action === 'trigger') {
+      // Special handling for account button - trigger settings and set to account section
+      if (button.id === 'account') {
+        // First trigger the settings dialog
+        const settingsElement = document.querySelector('[data-settings-trigger]');
+        if (settingsElement) {
+          settingsElement.click();
+
+          // Wait for the dialog to open, then set the active section to account
+          setTimeout(() => {
+            // Dispatch a custom event to set the account section as active
+            window.dispatchEvent(new CustomEvent('set-settings-section', {
+              detail: { section: 'account' }
+            }));
+          }, 100);
+        }
+        return;
+      }
+
       // Try multiple strategies to find and trigger the existing header button
       const selectors = [
         button.selector, // Primary selector with data attribute

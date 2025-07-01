@@ -133,12 +133,23 @@ export default function Settings() {
       const fullName = user.user_metadata?.full_name || '';
       const nameParts = fullName.split(' ');
       setFormData({
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-        about: 'Deep Journal enthusiast • Thoughtful reflection through AI-powered insights',
-        website: '',
-        username: user.email?.split('@')[0] || '',
-        pronouns: [],
+        firstName: nameParts[0] || 'Deep',
+        lastName: nameParts.slice(1).join(' ') || 'Bikram',
+        about: user.user_metadata?.about || 'Founder & CEO at Enotes Nepal - Nepal\'s Largest Digital Learning Platform',
+        website: user.user_metadata?.website || 'https://',
+        username: user.user_metadata?.username || user.email?.split('@')[0] || 'mrdeepbikram',
+        pronouns: user.user_metadata?.pronouns || ['he/him'],
+        avatar: user.user_metadata?.avatar || null
+      });
+    } else {
+      // Default values when no user is signed in
+      setFormData({
+        firstName: 'Deep',
+        lastName: 'Bikram',
+        about: 'Founder & CEO at Enotes Nepal - Nepal\'s Largest Digital Learning Platform',
+        website: 'https://',
+        username: 'mrdeepbikram',
+        pronouns: ['he/him'],
         avatar: null
       });
     }
@@ -608,16 +619,16 @@ export default function Settings() {
     });
   };
 
-  const tabItems = [
+  const settingsSections = [
     {
       id: 'profile',
-      label: 'Profile',
+      label: 'Profile & Account',
       icon: PersonIcon,
     },
     {
-      id: 'account',
-      label: 'Account',
-      icon: KeyIcon,
+      id: 'ai',
+      label: 'AI Assistant',
+      icon: AIIcon,
     },
     {
       id: 'appearance',
@@ -630,45 +641,35 @@ export default function Settings() {
       icon: BellIcon,
     },
     {
-      id: 'privacy',
-      label: 'Privacy',
-      icon: EyeIcon,
-    },
-    {
       id: 'security',
-      label: 'Security',
+      label: 'Security & Privacy',
       icon: ShieldIcon,
-    },
-    {
-      id: 'updates',
-      label: 'Updates',
-      icon: DownloadIcon,
-    },
-    {
-      id: 'ai',
-      label: 'AI Assistant',
-      icon: AIIcon,
     },
     {
       id: 'data',
       label: 'Data & Storage',
       icon: DatabaseIcon,
     },
+    {
+      id: 'updates',
+      label: 'Updates',
+      icon: RefreshIcon,
+    },
   ];
 
   const renderTabNavigation = () => {
     return (
       <div className={styles.tabNavigation}>
-        {tabItems.map((item, index) => {
-          const Icon = item.icon;
+        {settingsSections.map((section, index) => {
+          const Icon = section.icon;
           return (
             <button
-              key={item.id}
-              className={`${styles.tabItem} ${activeSection === item.id ? styles.active : ''}`}
-              onClick={() => setActiveSection(item.id)}
+              key={section.id}
+              className={`${styles.tabItem} ${activeSection === section.id ? styles.active : ''}`}
+              onClick={() => setActiveSection(section.id)}
             >
               <Icon className={styles.tabIcon} />
-              <span className={styles.tabLabel}>{item.label}</span>
+              <span className={styles.tabLabel}>{section.label}</span>
             </button>
           );
         })}
@@ -682,133 +683,163 @@ export default function Settings() {
         return (
           <div className={styles.contentSection}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Profile</h3>
+              <h3 className={styles.sectionTitle}>Profile & Account</h3>
               <p className={styles.sectionDescription}>
-                Manage your personal information and profile settings.
+                Manage your personal information and account settings.
               </p>
             </div>
 
-            <div
-              className={`${styles.photoSection} ${isDragOver ? styles.dragOver : ''} ${formErrors.avatar ? styles.error : ''}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <div className={styles.photoPreview}>
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar preview"
-                    className={styles.avatarImage}
-                  />
-                ) : (
-                  <PersonIcon className={styles.photoIcon} />
-                )}
-                {isDragOver && (
-                  <div className={styles.dragOverlay}>
-                    <span>Drop image here</span>
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>Profile Photo</h4>
+                <div className={styles.photoSection}>
+                  <div className={styles.photoContainer}>
+                    <div className={styles.photoPreview}>
+                      {avatarPreview ? (
+                        <img
+                          src={avatarPreview}
+                          alt="Profile photo"
+                          className={styles.avatarImage}
+                        />
+                      ) : (
+                        <PersonIcon className={styles.photoIcon} />
+                      )}
+                    </div>
+                    <div className={styles.photoActions}>
+                      <button
+                        type="button"
+                        className={styles.changePhotoBtn}
+                        onClick={handleChangePhotoClick}
+                      >
+                        <CameraIcon className={styles.buttonIcon} />
+                        Change Photo
+                      </button>
+                      {avatarPreview && (
+                        <button
+                          type="button"
+                          className={styles.removePhotoBtn}
+                          onClick={handleRemoveAvatar}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarInputChange}
+                    className={styles.hiddenFileInput}
+                  />
+                </div>
               </div>
-              <div className={styles.photoActions}>
-                <button
-                  type="button"
-                  className={styles.changePhotoBtn}
-                  onClick={handleChangePhotoClick}
-                >
-                  {avatarPreview ? 'Change' : 'Upload'}
-                </button>
-                {avatarPreview && (
-                  <button
-                    type="button"
-                    className={styles.removePhotoBtn}
-                    onClick={handleRemoveAvatar}
-                  >
-                    Remove
-                  </button>
-                )}
+
+              <div className={styles.settingsCard}>
+                <h4>Personal Information</h4>
+                <div className={styles.formGrid}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.fieldLabel}>First name</label>
+                      <input
+                        type="text"
+                        className={styles.fieldInput}
+                        value={formData.firstName}
+                        onChange={(e) => handleFormChange('firstName', e.target.value)}
+                        placeholder="Deep Bikram"
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.fieldLabel}>Last name</label>
+                      <input
+                        type="text"
+                        className={styles.fieldInput}
+                        value={formData.lastName}
+                        onChange={(e) => handleFormChange('lastName', e.target.value)}
+                        placeholder="Thapa Chhetri"
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>About</label>
+                    <textarea
+                      className={styles.fieldTextarea}
+                      value={formData.about}
+                      onChange={(e) => handleFormChange('about', e.target.value)}
+                      placeholder="Tell us about yourself..."
+                      rows="3"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>Website</label>
+                    <input
+                      type="url"
+                      className={styles.fieldInput}
+                      value={formData.website}
+                      onChange={(e) => handleFormChange('website', e.target.value)}
+                      placeholder="https://yourwebsite.com"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>Username</label>
+                    <input
+                      type="text"
+                      className={styles.fieldInput}
+                      value={formData.username}
+                      onChange={(e) => handleFormChange('username', e.target.value)}
+                      placeholder="mrdeepbikram"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>Pronouns</label>
+                    <input
+                      type="text"
+                      className={styles.fieldInput}
+                      value={formData.pronouns.join(', ')}
+                      onChange={(e) => handleFormChange('pronouns', e.target.value.split(', ').filter(p => p.trim()))}
+                      placeholder="he/him, she/her, they/them"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className={styles.photoHelp}>
-                <span>JPG, PNG, GIF up to 5MB • Drag & drop or click to upload</span>
-              </div>
-              {formErrors.avatar && (
-                <div className={styles.errorMessage}>
-                  {formErrors.avatar}
+
+              {user && (
+                <div className={styles.settingsCard}>
+                  <h4>Account Information</h4>
+                  <div className={styles.accountInfo}>
+                    <div className={styles.accountRow}>
+                      <span className={styles.accountLabel}>Email</span>
+                      <span className={styles.accountValue}>{user.email}</span>
+                    </div>
+                    <div className={styles.accountRow}>
+                      <span className={styles.accountLabel}>Member since</span>
+                      <span className={styles.accountValue}>
+                        {new Date(user.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.accountActions}>
+                    <button className={styles.secondaryButton}>Change Password</button>
+                    <button className={styles.secondaryButton}>
+                      <DownloadIcon className={styles.buttonIcon} />
+                      Download Data
+                    </button>
+                    <button
+                      className={styles.logoutButton}
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                    >
+                      <LogoutIcon className={styles.buttonIcon} />
+                      {isLoggingOut ? 'Signing out...' : 'Sign Out'}
+                    </button>
+                  </div>
                 </div>
               )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarInputChange}
-                className={styles.hiddenFileInput}
-              />
-            </div>
-
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>First Name</label>
-                <input
-                  type="text"
-                  className={styles.formInput}
-                  value={formData.firstName}
-                  onChange={(e) => handleFormChange('firstName', e.target.value)}
-                  placeholder="Enter your first name"
-                />
-                {formErrors.firstName && (
-                  <div className={styles.validationHint}>
-                    {formErrors.firstName}
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Last Name</label>
-                <input
-                  type="text"
-                  className={styles.formInput}
-                  value={formData.lastName}
-                  onChange={(e) => handleFormChange('lastName', e.target.value)}
-                  placeholder="Enter your last name"
-                />
-                {formErrors.lastName && (
-                  <div className={styles.validationHint}>
-                    {formErrors.lastName}
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>About</label>
-                <textarea
-                  className={styles.formTextarea}
-                  value={formData.about}
-                  onChange={(e) => handleFormChange('about', e.target.value)}
-                  placeholder="Tell us about yourself..."
-                />
-                <div className={styles.inputHint}>
-                  Share a brief description about yourself and your interests.
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Website</label>
-                <input
-                  type="url"
-                  className={`${styles.formInput} ${formErrors.website ? styles.error : ''}`}
-                  value={formData.website}
-                  onChange={(e) => handleFormChange('website', e.target.value)}
-                  placeholder="https://your-website.com"
-                />
-                {formErrors.website && (
-                  <div className={styles.errorMessage}>
-                    {formErrors.website}
-                  </div>
-                )}
-                <div className={styles.inputHint}>
-                  Optional: Your personal or professional website.
-                </div>
-              </div>
             </div>
           </div>
         );
@@ -823,87 +854,88 @@ export default function Settings() {
               </p>
             </div>
 
-            <div className={styles.themeSelector}>
-              <label className={styles.formLabel}>Theme Selection</label>
-              <div className={styles.themeGrid}>
-                {renderThemes()}
-              </div>
-              <div className={styles.themeInfo}>
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>Theme Selection</h4>
+                <p>Choose a theme that matches your preference and reduces eye strain.</p>
+                <div className={styles.themeGrid}>
+                  {renderThemes()}
+                </div>
                 <div className={styles.currentThemeInfo}>
                   <span className={styles.themeLabel}>Current Theme:</span>
                   <span className={styles.themeName}>{currentTheme}</span>
                 </div>
-                <div className={styles.themeDescription}>
-                  Choose a theme that matches your preference and reduces eye strain.
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.toggleGroup}>
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Compact Mode</div>
-                  <div className={styles.toggleDescription}>Show more content in less space for better productivity</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="compact-mode"
-                    className={styles.toggleInput}
-                    onChange={(e) => handleFormChange('compactMode', e.target.checked)}
-                  />
-                  <label htmlFor="compact-mode" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
               </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>High Contrast</div>
-                  <div className={styles.toggleDescription}>Increase contrast for better accessibility</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="high-contrast"
-                    className={styles.toggleInput}
-                    onChange={(e) => handleFormChange('highContrast', e.target.checked)}
-                  />
-                  <label htmlFor="high-contrast" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
+              <div className={styles.settingsCard}>
+                <h4>Interface Options</h4>
+                <div className={styles.toggleGroup}>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Compact Mode</div>
+                      <div className={styles.toggleDescription}>Show more content in less space for better productivity</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="compact-mode"
+                        className={styles.toggleInput}
+                        onChange={(e) => handleFormChange('compactMode', e.target.checked)}
+                      />
+                      <label htmlFor="compact-mode" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Reduced Motion</div>
-                  <div className={styles.toggleDescription}>Minimize animations and transitions</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="reduced-motion"
-                    className={styles.toggleInput}
-                    onChange={(e) => handleFormChange('reducedMotion', e.target.checked)}
-                  />
-                  <label htmlFor="reduced-motion" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>High Contrast</div>
+                      <div className={styles.toggleDescription}>Increase contrast for better accessibility</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="high-contrast"
+                        className={styles.toggleInput}
+                        onChange={(e) => handleFormChange('highContrast', e.target.checked)}
+                      />
+                      <label htmlFor="high-contrast" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Smooth Animations</div>
-                  <div className={styles.toggleDescription}>Enable interface transitions</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input type="checkbox" id="animations" className={styles.toggleInput} defaultChecked />
-                  <label htmlFor="animations" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Reduced Motion</div>
+                      <div className={styles.toggleDescription}>Minimize animations and transitions</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="reduced-motion"
+                        className={styles.toggleInput}
+                        onChange={(e) => handleFormChange('reducedMotion', e.target.checked)}
+                      />
+                      <label htmlFor="reduced-motion" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Smooth Animations</div>
+                      <div className={styles.toggleDescription}>Enable interface transitions</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input type="checkbox" id="animations" className={styles.toggleInput} defaultChecked />
+                      <label htmlFor="animations" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -916,23 +948,33 @@ export default function Settings() {
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>AI Assistant</h3>
               <p className={styles.sectionDescription}>
-                Configure your AI provider and customize responses.
+                Configure your AI provider and customize responses to enhance your journaling experience.
               </p>
             </div>
 
-            <AISettingTabs APIkey={APIkey} setCurrentKey={setCurrentKey} />
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>AI Provider Configuration</h4>
+                <p>Choose and configure your preferred AI service for journal analysis and insights.</p>
+                <AISettingTabs APIkey={APIkey} setCurrentKey={setCurrentKey} />
+              </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>AI Personality</label>
-              <textarea
-                className={styles.formTextarea}
-                placeholder="Describe how you want the AI to analyze and respond to your journal entries..."
-                value={prompt}
-                onChange={handleOnChangePrompt}
-                style={{ minHeight: '120px' }}
-              />
-              <div className={styles.inputHint}>
-                Customize how AI responds to your journal entries.
+              <div className={styles.settingsCard}>
+                <h4>AI Personality & Behavior</h4>
+                <p>Customize how the AI analyzes and responds to your journal entries.</p>
+                <div className={styles.formGroup}>
+                  <label className={styles.fieldLabel}>AI Instructions</label>
+                  <textarea
+                    className={styles.fieldTextarea}
+                    placeholder="Describe how you want the AI to analyze and respond to your journal entries..."
+                    value={prompt}
+                    onChange={handleOnChangePrompt}
+                    rows="6"
+                  />
+                  <div className={styles.fieldHint}>
+                    Define the AI's personality, tone, and approach when providing insights about your journal entries.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -944,30 +986,38 @@ export default function Settings() {
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Updates</h3>
               <p className={styles.sectionDescription}>
-                Keep Deep Journal up to date with the latest features.
+                Keep Deep Journal up to date with the latest features and improvements.
               </p>
             </div>
 
-            <div className={styles.toggleContainer}>
-              <div>
-                <div className={styles.toggleTitle}>Auto Updates</div>
-                <div className={styles.toggleDescription}>Automatically download and install updates</div>
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>Auto Update Settings</h4>
+                <div className={styles.toggleContainer}>
+                  <div className={styles.toggleContent}>
+                    <div className={styles.toggleTitle}>Enable Auto Updates</div>
+                    <div className={styles.toggleDescription}>Automatically download and install updates when available</div>
+                  </div>
+                  <div className={styles.toggleSwitch}>
+                    <input
+                      type="checkbox"
+                      id="auto-update"
+                      className={styles.toggleInput}
+                      checked={autoUpdateEnabled}
+                      onChange={handleAutoUpdateToggle}
+                    />
+                    <label htmlFor="auto-update" className={styles.toggleSlider}>
+                      <span className={styles.toggleThumb}></span>
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div className={styles.toggleSwitch}>
-                <input
-                  type="checkbox"
-                  id="auto-update"
-                  className={styles.toggleInput}
-                  checked={autoUpdateEnabled}
-                  onChange={handleAutoUpdateToggle}
-                />
-                <label htmlFor="auto-update" className={styles.toggleSlider}>
-                  <span className={styles.toggleThumb}></span>
-                </label>
+
+              <div className={styles.settingsCard}>
+                <h4>Update Status</h4>
+                <UpdateStatusPanel />
               </div>
             </div>
-
-            <UpdateStatusPanel />
           </div>
         );
 
@@ -977,149 +1027,118 @@ export default function Settings() {
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Notifications & Reminders</h3>
               <p className={styles.sectionDescription}>
-                Set up personalized reminders to maintain your journaling habit.
+                Set up personalized reminders to maintain your journaling habit and stay engaged.
               </p>
             </div>
 
-            <div className={styles.toggleGroup}>
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Daily Writing Reminders</div>
-                  <div className={styles.toggleDescription}>Get gentle reminders to journal each day</div>
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>Daily Writing Reminders</h4>
+                <div className={styles.toggleGroup}>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Enable Daily Reminders</div>
+                      <div className={styles.toggleDescription}>Get gentle reminders to journal each day</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="daily-reminders"
+                        className={styles.toggleInput}
+                        defaultChecked
+                        onChange={(e) => handleFormChange('dailyReminders', e.target.checked)}
+                      />
+                      <label htmlFor="daily-reminders" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.toggleSwitch}>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.fieldLabel}>Reminder Time</label>
                   <input
-                    type="checkbox"
-                    id="daily-reminders"
-                    className={styles.toggleInput}
-                    defaultChecked
-                    onChange={(e) => handleFormChange('dailyReminders', e.target.checked)}
+                    type="time"
+                    className={styles.fieldInput}
+                    defaultValue="20:00"
+                    onChange={(e) => handleFormChange('reminderTime', e.target.value)}
                   />
-                  <label htmlFor="daily-reminders" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
+                  <div className={styles.fieldHint}>
+                    Choose the best time for your daily writing reminder.
+                  </div>
                 </div>
               </div>
 
-              {/* Reminder time setting */}
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Reminder Time</label>
-                <input
-                  type="time"
-                  className={styles.formInput}
-                  defaultValue="20:00"
-                  onChange={(e) => handleFormChange('reminderTime', e.target.value)}
-                />
-                <div className={styles.inputHint}>
-                  Choose the best time for your daily writing reminder.
-                </div>
-              </div>
+              <div className={styles.settingsCard}>
+                <h4>Additional Notifications</h4>
+                <div className={styles.toggleGroup}>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Weekly Reflection Prompts</div>
+                      <div className={styles.toggleDescription}>Receive thoughtful prompts for deeper reflection</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="weekly-prompts"
+                        className={styles.toggleInput}
+                        onChange={(e) => handleFormChange('weeklyPrompts', e.target.checked)}
+                      />
+                      <label htmlFor="weekly-prompts" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Weekly Reflection Prompts</div>
-                  <div className={styles.toggleDescription}>Receive thoughtful prompts for deeper reflection</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="weekly-prompts"
-                    className={styles.toggleInput}
-                    onChange={(e) => handleFormChange('weeklyPrompts', e.target.checked)}
-                  />
-                  <label htmlFor="weekly-prompts" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Milestone Celebrations</div>
+                      <div className={styles.toggleDescription}>Get notified when you reach journaling milestones</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="milestones"
+                        className={styles.toggleInput}
+                        defaultChecked
+                        onChange={(e) => handleFormChange('milestones', e.target.checked)}
+                      />
+                      <label htmlFor="milestones" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Milestone Celebrations</div>
-                  <div className={styles.toggleDescription}>Get notified when you reach journaling milestones</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="milestones"
-                    className={styles.toggleInput}
-                    defaultChecked
-                    onChange={(e) => handleFormChange('milestones', e.target.checked)}
-                  />
-                  <label htmlFor="milestones" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Smart Suggestions</div>
+                      <div className={styles.toggleDescription}>Receive AI-powered writing suggestions and insights</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        id="smart-suggestions"
+                        className={styles.toggleInput}
+                        onChange={(e) => handleFormChange('smartSuggestions', e.target.checked)}
+                      />
+                      <label htmlFor="smart-suggestions" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
 
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Smart Suggestions</div>
-                  <div className={styles.toggleDescription}>Receive AI-powered writing suggestions and insights</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input
-                    type="checkbox"
-                    id="smart-suggestions"
-                    className={styles.toggleInput}
-                    onChange={(e) => handleFormChange('smartSuggestions', e.target.checked)}
-                  />
-                  <label htmlFor="smart-suggestions" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>AI Insights</div>
-                  <div className={styles.toggleDescription}>Notify when AI finds insights</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input type="checkbox" id="ai-insights" className={styles.toggleInput} defaultChecked />
-                  <label htmlFor="ai-insights" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'privacy':
-        return (
-          <div className={styles.contentSection}>
-            <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Privacy</h3>
-              <p className={styles.sectionDescription}>
-                Control your privacy and data settings.
-              </p>
-            </div>
-
-            <div className={styles.toggleGroup}>
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>Analytics</div>
-                  <div className={styles.toggleDescription}>Help improve Deep Journal with usage data</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input type="checkbox" id="analytics" className={styles.toggleInput} />
-                  <label htmlFor="analytics" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.toggleContainer}>
-                <div>
-                  <div className={styles.toggleTitle}>AI Processing</div>
-                  <div className={styles.toggleDescription}>Allow AI to analyze journals</div>
-                </div>
-                <div className={styles.toggleSwitch}>
-                  <input type="checkbox" id="ai-processing" className={styles.toggleInput} defaultChecked />
-                  <label htmlFor="ai-processing" className={styles.toggleSlider}>
-                    <span className={styles.toggleThumb}></span>
-                  </label>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>AI Insights</div>
+                      <div className={styles.toggleDescription}>Notify when AI finds patterns or insights in your writing</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input type="checkbox" id="ai-insights" className={styles.toggleInput} defaultChecked />
+                      <label htmlFor="ai-insights" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1127,6 +1146,99 @@ export default function Settings() {
         );
 
       case 'security':
+        return (
+          <div className={styles.contentSection}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.sectionTitle}>Security & Privacy</h3>
+              <p className={styles.sectionDescription}>
+                Protect your journal with authentication and manage privacy settings.
+              </p>
+            </div>
+
+            <div className={styles.settingsContent}>
+              {!securitySettings.enabled ? (
+                <div className={styles.settingsCard}>
+                  <div className={styles.securitySetup}>
+                    <div className={styles.securityPrompt}>
+                      <div className={styles.securityIcon}>
+                        <ShieldIcon />
+                      </div>
+                      <div className={styles.securityContent}>
+                        <h4>Enable Security Protection</h4>
+                        <p>Protect your private thoughts with secure authentication. Choose from PIN, password, or biometric options.</p>
+                        {!showSecuritySetup ? (
+                          <button
+                            className={styles.primaryButton}
+                            onClick={() => setShowSecuritySetup(true)}
+                          >
+                            <LockIcon className={styles.buttonIcon} />
+                            Set Up Security
+                          </button>
+                        ) : (
+                          // ...existing security setup flow...
+                          <div>{/* Security setup steps would go here */}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.settingsCard}>
+                  <h4>Security Status</h4>
+                  <div className={styles.securityStatus}>
+                    <div className={styles.statusIndicator}>
+                      <ShieldIcon className={styles.activeShield} />
+                      <div className={styles.statusContent}>
+                        <span className={styles.statusTitle}>Security Enabled</span>
+                        <span className={styles.statusDescription}>
+                          Protected with {securitySettings.authType === 'pin' ? 'PIN' : 'password'} authentication
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.securityActions}>
+                    <button className={styles.secondaryButton}>Change Authentication</button>
+                    <button className={styles.dangerButton} onClick={handleDisableSecurity}>
+                      Disable Security
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.settingsCard}>
+                <h4>Privacy Settings</h4>
+                <div className={styles.toggleGroup}>
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>Analytics</div>
+                      <div className={styles.toggleDescription}>Help improve Deep Journal with anonymous usage data</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input type="checkbox" id="analytics" className={styles.toggleInput} />
+                      <label htmlFor="analytics" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className={styles.toggleContainer}>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleTitle}>AI Processing</div>
+                      <div className={styles.toggleDescription}>Allow AI to analyze your journal entries for insights</div>
+                    </div>
+                    <div className={styles.toggleSwitch}>
+                      <input type="checkbox" id="ai-processing" className={styles.toggleInput} defaultChecked />
+                      <label htmlFor="ai-processing" className={styles.toggleSlider}>
+                        <span className={styles.toggleThumb}></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
         return (
           <div className={styles.contentSection}>
             <div className={styles.sectionHeader}>
@@ -1595,90 +1707,51 @@ export default function Settings() {
           </div>
         );
 
-      case 'account':
-        return (
-          <div className={styles.contentSection}>
-            <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Account</h3>
-              <p className={styles.sectionDescription}>
-                Manage your account information and settings.
-              </p>
-            </div>
-
-            {user && (
-              <div className={styles.accountCard}>
-                <div className={styles.accountRow}>
-                  <span className={styles.accountLabel}>Email</span>
-                  <span className={styles.accountValue}>{user.email}</span>
-                </div>
-                <div className={styles.accountRow}>
-                  <span className={styles.accountLabel}>Member since</span>
-                  <span className={styles.accountValue}>
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div className={styles.actionsList}>
-              <div className={styles.actionItem}>
-                <div className={styles.actionContent}>
-                  <div className={styles.actionLabel}>Change Password</div>
-                  <div className={styles.actionDescription}>Update your account password</div>
-                </div>
-                <button className={styles.actionButton}>Change</button>
-              </div>
-
-              <div className={styles.actionItem}>
-                <div className={styles.actionContent}>
-                  <div className={styles.actionLabel}>Download Data</div>
-                  <div className={styles.actionDescription}>Export your account information</div>
-                </div>
-                <button className={styles.actionButton}>Download</button>
-              </div>
-
-              <div className={styles.actionItem}>
-                <div className={styles.actionContent}>
-                  <div className={styles.actionLabel}>Sign Out</div>
-                  <div className={styles.actionDescription}>Sign out from this device</div>
-                </div>
-                <button
-                  className={styles.logoutButton}
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                >
-                  <LogoutIcon className={styles.logoutIcon} />
-                  {isLoggingOut ? 'Signing out...' : 'Sign Out'}
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
       case 'data':
         return (
           <div className={styles.contentSection}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Data & Storage</h3>
               <p className={styles.sectionDescription}>
-                Manage your data and storage preferences.
+                Manage your journal data, search index, and storage preferences.
               </p>
             </div>
 
-            <div className={styles.actionItem}>
-              <div className={styles.actionContent}>
-                <div className={styles.actionLabel}>Regenerate Index</div>
-                <div className={styles.actionDescription}>Rebuild the search index for all entries</div>
+            <div className={styles.settingsContent}>
+              <div className={styles.settingsCard}>
+                <h4>Search Index Management</h4>
+                <p>Rebuild the search index to improve search accuracy and performance.</p>
+                <div className={styles.actionItem}>
+                  <div className={styles.actionContent}>
+                    <div className={styles.actionLabel}>Regenerate Search Index</div>
+                    <div className={styles.actionDescription}>Rebuild the search index for all journal entries</div>
+                  </div>
+                  <button
+                    className={styles.primaryButton}
+                    onClick={() => {
+                      regenerateEmbeddings();
+                    }}
+                  >
+                    <RefreshIcon className={styles.buttonIcon} />
+                    Regenerate
+                  </button>
+                </div>
               </div>
-              <button
-                className={styles.actionButton}
-                onClick={() => {
-                  regenerateEmbeddings();
-                }}
-              >
-                <RefreshIcon className={styles.actionIcon} />
-                Regenerate
-              </button>
+
+              <div className={styles.settingsCard}>
+                <h4>Data Export</h4>
+                <p>Export your journal data for backup or migration purposes.</p>
+                <div className={styles.actionItem}>
+                  <div className={styles.actionContent}>
+                    <div className={styles.actionLabel}>Export All Data</div>
+                    <div className={styles.actionDescription}>Download a complete backup of your journal entries</div>
+                  </div>
+                  <button className={styles.secondaryButton}>
+                    <DownloadIcon className={styles.buttonIcon} />
+                    Export Data
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -2027,7 +2100,22 @@ export default function Settings() {
   useEffect(() => {
     loadSecuritySettings();
     checkBiometricAvailability();
-  }, [loadSecuritySettings, checkBiometricAvailability]);
+  }, []);
+
+  // Listen for external requests to set specific settings sections
+  useEffect(() => {
+    const handleSetSection = (event) => {
+      if (event.detail && event.detail.section) {
+        setActiveSection(event.detail.section);
+      }
+    };
+
+    window.addEventListener('set-settings-section', handleSetSection);
+
+    return () => {
+      window.removeEventListener('set-settings-section', handleSetSection);
+    };
+  }, []);
 
   return (
     <Dialog.Root>
@@ -2224,17 +2312,6 @@ export default function Settings() {
             <div className={styles.footerLeft}>
               {/* Auto-save status indicator */}
               <AutoSaveStatusIndicator />
-            </div>
-
-            <div className={styles.footerActions}>
-              <Dialog.Close asChild>
-                <button
-                  className={`${styles.footerButton} ${styles.closeButton}`}
-                  data-settings-close
-                >
-                  Close
-                </button>
-              </Dialog.Close>
             </div>
           </div>
 
