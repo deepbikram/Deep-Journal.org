@@ -4,7 +4,7 @@
   position: fixed;
   left: 20px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateZ(0); /* Combined transform with GPU acceleration */
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -15,14 +15,17 @@
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.08),
     0 1px 4px rgba(0, 0, 0, 0.04);
-  transition: all ease-in-out 300ms;
+  transition: all ease-in-out 200ms;
   user-select: none;
+  will-change: transform, box-shadow; /* Optimize for animations */
+  backface-visibility: hidden; /* Prevent flickering */
+  contain: layout style paint; /* Prevent repaint/reflow fluctuations */
 
   &:hover {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.12),
       0 2px 8px rgba(0, 0, 0, 0.06);
-    transform: translateY(-50%) translateX(4px);
+    transform: translateY(-50%) translateX(2px) translateZ(0); /* Maintain GPU acceleration */
     background: var(--bg);
   }
 }
@@ -43,11 +46,15 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all ease-in-out 240ms;
+  transition: all ease-in-out 200ms;
   position: relative;
   text-decoration: none;
   color: inherit;
   overflow: hidden;
+  will-change: transform, background-color; /* Optimize for animations */
+  backface-visibility: hidden; /* Prevent flickering */
+  contain: layout style; /* Force consistent rendering */
+  transform-origin: center center; /* Maintain transform origin for stability */
 
   /* Subtle background pattern */
   &::before {
@@ -62,7 +69,7 @@
 
   &:hover {
     background: var(--bg-secondary);
-    transform: scale(1.08);
+    transform: scale(1.05);
     border: 1px solid rgba(var(--primary-rgb), 0.1);
 
     &::before {
@@ -70,7 +77,7 @@
     }
 
     .iconWrapper {
-      transform: scale(1.15) rotate(2deg);
+      transform: scale(1.1);
     }
 
     .icon {
@@ -120,7 +127,7 @@
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transition: all ease-in-out 240ms;
+    transition: all ease-in-out 200ms;
     z-index: 1000;
     border: 1px solid rgba(var(--primary-rgb), 0.1);
     box-shadow:
@@ -150,8 +157,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all ease-in-out 240ms;
+  transition: all ease-in-out 200ms;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  width: 100%; /* Ensure full width for perfect centering */
+  height: 100%; /* Ensure full height for perfect centering */
 }
 
 .icon {
@@ -159,7 +168,9 @@
   height: 22px;
   color: var(--secondary);
   opacity: 0.7;
-  transition: all ease-in-out 240ms;
+  transition: all ease-in-out 200ms;
+  flex-shrink: 0; /* Prevent icon shrinking */
+  object-fit: contain; /* Ensure proper icon scaling */
 }
 
 /* Responsive design */
@@ -217,22 +228,20 @@
   }
 }
 
-/* Smooth entrance animation */
+/* Simplified entrance animation */
 .verticalSidebar {
-  animation: slideInSidebar 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: slideInSidebar 0.3s ease-out;
+  animation-fill-mode: both;
 }
 
 @keyframes slideInSidebar {
   0% {
     opacity: 0;
-    transform: translateY(-50%) translateX(-30px) scale(0.9);
-  }
-  60% {
-    transform: translateY(-50%) translateX(2px) scale(1.02);
+    transform: translateY(-50%) translateX(-20px);
   }
   100% {
     opacity: 1;
-    transform: translateY(-50%) translateX(0) scale(1);
+    transform: translateY(-50%) translateX(0);
   }
 }
 
@@ -264,23 +273,4 @@
   }
 }
 
-/* Subtle pulsing effect for interactive buttons */
-.buttonItem:not(.disabled):not([data-active="true"]) {
-  &:hover {
-    animation: subtlePulse 2s ease-in-out infinite;
-  }
-}
-
-@keyframes subtlePulse {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.08),
-      0 1px 4px rgba(0, 0, 0, 0.04);
-  }
-  50% {
-    box-shadow:
-      0 6px 24px rgba(0, 0, 0, 0.12),
-      0 2px 8px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(var(--primary-rgb), 0.1);
-  }
-}
+/* Removed problematic pulsing animation that caused fluctuation */
