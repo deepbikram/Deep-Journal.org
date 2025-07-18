@@ -258,7 +258,6 @@
       ]
     },
     "win": {
-      "publisherName": "Deep Journal",
       "target": [
         {
           "target": "nsis",

@@ -41,7 +41,7 @@ export default function DeleteDeepJournal({ deepJournal }) {
                   deleteDeepJournal(deepJournal.name);
                 }}
               >
-                Yes, remove Deep Journal
+                Yes, remove Journal
               </button>
             </AlertDialog.Action>
           </div>
