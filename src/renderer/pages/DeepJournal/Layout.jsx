@@ -19,7 +19,7 @@ import UpdateButton from 'renderer/components/UpdateButton';
 export default function DeepJournalLayout({ children }) {
   const { deepJournalName } = useParams();
   const { index, refreshIndex } = useIndexContext();
-  const { visibleIndex, closestDate } = useTimelineContext();
+  const { visibleIndex, closestDate, isTimelineMinimized } = useTimelineContext();
   const { currentTheme } = useDeepJournalsContext();
 
   const [now, setNow] = useState(DateTime.now().toFormat('cccc, LLL dd, yyyy'));
@@ -53,7 +53,7 @@ export default function DeepJournalLayout({ children }) {
     <div className={`${styles.frame} ${themeStyles} ${osStyles}`}>
       <div className={styles.bg}></div>
       <div className={styles.main}>
-        <div className={styles.sidebar}>
+        <div className={`${styles.sidebar} ${isTimelineMinimized ? styles.minimized : ''}`}>
           <div className={styles.top}>
             <div className={styles.part}>
               <div className={styles.count}>
@@ -63,7 +63,7 @@ export default function DeepJournalLayout({ children }) {
           </div>
           <Sidebar />
         </div>
-        <div className={styles.content}>
+        <div className={`${styles.content} ${isTimelineMinimized ? styles.expanded : ''}`}>
           <div className={styles.nav}>
             <div className={styles.left}>
               {deepJournalName} <span style={{ padding: '6px' }}>·</span>

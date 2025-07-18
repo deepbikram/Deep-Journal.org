@@ -4,7 +4,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent, shell } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
-export type Channels = 'ipc-example' | 'restart_app' | 'update_checking' | 'update_available' | 'update_not_available' | 'update_downloaded' | 'update_error' | 'update_download_progress';
+export type Channels = 'ipc-example' | 'restart_app' | 'update_checking' | 'update_available' | 'update_not_available' | 'update_downloaded' | 'update_error' | 'update_download_progress' | 'window-maximized' | 'window-unmaximized' | 'window-resized' | 'oauth-callback' | 'oauth-tokens';
 
 const electronHandler = {
   ipc: {
@@ -79,11 +79,24 @@ const electronHandler = {
   getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
   setAutoUpdatePreference: (enabled: boolean) => ipcRenderer.invoke('set-auto-update-preference', enabled),
   getAutoUpdatePreference: () => ipcRenderer.invoke('get-auto-update-preference'),
-  openReleasesPage: () => ipcRenderer.invoke('open-releases-page'),
-  // Environment variables access for renderer process
-  env: {
-    SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL || 'https://pldjgkcisnddmzndyqbb.supabase.co',
-    SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsZGpna2Npc25kZG16bmR5cWJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3MzM1OTYsImV4cCI6MjA2NTMwOTU5Nn0.8NxJrqyFwW6CNyB8z-70B42-NcTOwVJOii7sN1L9uj4',
+  // Window state management
+  isWindowMaximized: () => ipcRenderer.invoke('is-window-maximized'),
+  onWindowStateChanged: (callback: (isMaximized: boolean) => void) => {
+    const handleMaximize = () => callback(true);
+    const handleUnmaximize = () => callback(false);
+    const handleResize = () => {
+      ipcRenderer.invoke('is-window-maximized').then(callback);
+    };
+
+    ipcRenderer.on('window-maximized', handleMaximize);
+    ipcRenderer.on('window-unmaximized', handleUnmaximize);
+    ipcRenderer.on('window-resized', handleResize);
+
+    return () => {
+      ipcRenderer.removeListener('window-maximized', handleMaximize);
+      ipcRenderer.removeListener('window-unmaximized', handleUnmaximize);
+      ipcRenderer.removeListener('window-resized', handleResize);
+    };
   },
 };
 

@@ -117,7 +117,7 @@ const Editor = memo(
         Typography,
         Link,
         Placeholder.configure({
-          placeholder: isAI ? 'AI is thinking...' : 'What are you thinking?',
+          placeholder: isAI ? 'AI is thinking...' : 'How are you feeling today?',
         }),
         CharacterCount.configure({
           limit: 10000,
@@ -192,7 +192,25 @@ const Editor = memo(
       generateAiResponse();
     }, [editor, isAI]);
 
+    const isPostEmpty = useCallback(() => {
+      if (!editor || !post) return true;
+
+      // Get plain text content from editor (strips HTML tags)
+      const textContent = editor.state.doc.textContent?.trim() || '';
+      const hasContent = textContent.length > 0;
+      const hasAttachments = post.data?.attachments?.length > 0;
+      const hasTags = post.data?.tags?.length > 0;
+
+      return !hasContent && !hasAttachments && !hasTags;
+    }, [editor, post]);
+
     const handleSubmit = useCallback(async () => {
+      // Prevent submission of empty posts
+      if (isPostEmpty()) {
+        console.log('Preventing empty post submission');
+        return;
+      }
+
       await savePost();
       if (isNew) {
         resetPost();
@@ -202,7 +220,7 @@ const Editor = memo(
 
       closeReply();
       setEditable(false);
-    }, [editor, isNew, post]);
+    }, [editor, isNew, post, isPostEmpty]);
 
     // Listen for the 'submit' event and call handleSubmit when it's triggered
     useEffect(() => {

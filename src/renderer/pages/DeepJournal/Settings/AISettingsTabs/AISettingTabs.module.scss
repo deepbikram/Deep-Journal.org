@@ -299,12 +299,6 @@
     border-bottom-left-radius: 10px;
     border-left: 2px solid var(--bg-tertiary);
     border-right: 2px solid var(--bg-tertiary);
-
-    &:first-child {
-    }
-
-    &:last-child {
-    }
   }
 
   &.activeCenter {
@@ -341,8 +335,6 @@
   // height: 200px;
   // background: var(--bg-secondary);
 
-  &:focus {
-  }
 }
 
 .fieldset {
@@ -382,9 +374,6 @@
   padding: 5px 5px 5px 16px;
   border-radius: 90px;
   max-width: 240px;
-
-  .left {
-  }
 
   .right {
     .subscribe {

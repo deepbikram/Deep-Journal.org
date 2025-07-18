@@ -8,10 +8,13 @@ const Message = ({ index, message, scrollToBottom }) => {
   const isUser = message.role === 'user';
   const [streamedResponse, setStreamedResponse] = useState('');
 
+  // Create a unique key for each message based on index and content
+  const messageKey = `message-${index}-${message.role}-${message.content?.slice(0, 10)?.replace(/\s/g, '') || 'empty'}`;
+
   return (
     <div style={{ minHeight: 72 }}>
       <motion.div
-        key={`${index}-item`}
+        key={messageKey}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

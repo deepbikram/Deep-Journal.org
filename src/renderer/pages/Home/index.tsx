@@ -7,14 +7,16 @@ import Logo from './logo';
 import OpenDeepJournalFolder from './OpenDeepJournalFolder';
 
 const quotes = [
-  'One moment at a time',
-  'Scribe your soul',
-  'Reflections reimagined',
-  'Look back, leap forward!',
-  'Tales of you - for every human is an epic in progress',
-  'Your thoughtopia awaits',
-  'The quintessence of quiet contemplation',
-  'Journal jamboree',
+  'The page listens, even when the world won’t.',
+  'This is where your unspoken self can breathe.',
+  'Words you never said still deserve to be heard.',
+  'Your depth was never too much for the page.',
+  'The page keeps secrets the world forgets to hold.',
+   'Here, even your silence has a voice.',
+   'No thought is too small to be seen here.',
+  'Every unshared word finds its home on the page.',
+  'The page is where your unheard stories come alive.',
+  'This page was made for the version of you that hides.',
 ];
 
 export default function Home() {
@@ -95,13 +97,6 @@ export default function Home() {
               className={styles.link}
             >
               Tutorial
-            </a>
-            <a
-              href="https://github.com/deepbikram/Deep-Journal.org"
-              target="_blank"
-              className={styles.link}
-            >
-              GitHub
             </a>
           </div>
         </div>

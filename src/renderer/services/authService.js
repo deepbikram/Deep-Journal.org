@@ -32,8 +32,96 @@ class AuthService {
       }
     });
 
+    // Listen for OAuth callbacks from main process
+    if (window.electron?.ipc?.on) {
+      window.electron.ipc.on('oauth-callback', (callbackUrl) => {
+        this.handleOAuthCallback(callbackUrl);
+      });
+
+      // Listen for OAuth tokens from main process (new method)
+      window.electron.ipc.on('oauth-tokens', (tokens) => {
+        this.handleOAuthTokens(tokens);
+      });
+    }
+
     // Check for existing session on init
     this.getSession();
+  }
+
+  /**
+   * Handle OAuth tokens directly from main process
+   */
+  async handleOAuthTokens(tokens) {
+    try {
+      console.log('Handling OAuth tokens:', {
+        hasAccessToken: !!tokens.access_token,
+        hasRefreshToken: !!tokens.refresh_token,
+        tokenType: tokens.token_type
+      });
+
+      if (tokens.access_token) {
+        // Set the session with the received tokens
+        const { data, error } = await supabase.auth.setSession({
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token || '',
+        });
+
+        if (error) {
+          console.error('OAuth token processing error:', error);
+          return { success: false, error: error.message };
+        }
+
+        console.log('OAuth authentication successful:', data);
+        return { success: true, data };
+      } else {
+        console.error('No access token found in OAuth tokens');
+        return { success: false, error: 'No access token received' };
+      }
+    } catch (error) {
+      console.error('OAuth token handling error:', error);
+      return { success: false, error: error.message || 'OAuth token processing failed' };
+    }
+  }
+
+  /**
+   * Handle OAuth callback from external browser (legacy method)
+   */
+  async handleOAuthCallback(callbackUrl) {
+    try {
+      console.log('Handling OAuth callback:', callbackUrl);
+
+      // Parse the callback URL to extract fragments/query params
+      const url = new URL(callbackUrl);
+      const hashParams = new URLSearchParams(url.hash.slice(1)); // Remove the '#'
+      const queryParams = new URLSearchParams(url.search);
+
+      // Check for tokens in hash (Supabase typically sends them in fragments)
+      const accessToken = hashParams.get('access_token') || queryParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
+      const tokenType = hashParams.get('token_type') || queryParams.get('token_type');
+
+      if (accessToken) {
+        // Set the session with the received tokens
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        });
+
+        if (error) {
+          console.error('OAuth callback error:', error);
+          return { success: false, error: error.message };
+        }
+
+        console.log('OAuth authentication successful:', data);
+        return { success: true, data };
+      } else {
+        console.error('No access token found in OAuth callback');
+        return { success: false, error: 'No access token received' };
+      }
+    } catch (error) {
+      console.error('OAuth callback handling error:', error);
+      return { success: false, error: error.message || 'OAuth callback failed' };
+    }
   }
 
   /**
@@ -121,7 +209,7 @@ class AuthService {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: 'http://localhost:3001/auth/callback',
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -161,7 +249,7 @@ class AuthService {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: 'http://localhost:3001/auth/callback',
         }
       });
 

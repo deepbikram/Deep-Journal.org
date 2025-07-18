@@ -14,11 +14,28 @@ import { resolveHtmlPath } from './util';
 import fs from 'fs';
 import path from 'path';
 import './ipc';
+import './handlers/window';
 import AppUpdater from './utils/autoUpdates';
+import { setupOAuthHandler } from './utils/oauthHandler';
 
 Menu.setApplicationMenu(null);
 
 let mainWindow: BrowserWindow | null = null;
+
+// Single instance lock to handle OAuth redirects properly
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window instead.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -110,6 +127,25 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
+  // Add window state event listeners for timeline behavior
+  mainWindow.on('maximize', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('window-maximized');
+    }
+  });
+
+  mainWindow.on('unmaximize', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('window-unmaximized');
+    }
+  });
+
+  mainWindow.on('resize', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('window-resized');
+    }
+  });
+
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
@@ -121,6 +157,9 @@ const createWindow = async () => {
 
   // setupAutoUpdater(mainWindow);
   new AppUpdater(mainWindow);
+
+  // Setup OAuth callback handling
+  setupOAuthHandler(mainWindow);
 };
 
 /**

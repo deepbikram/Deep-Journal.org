@@ -91,7 +91,7 @@ export default function Chat() {
   };
 
   const renderHistory = () => {
-    return history.map((text) => <div className={styles.text}>{text}</div>);
+    return history.map((text, index) => <div key={index} className={styles.text}>{text}</div>);
   };
 
   const osStyles = useMemo(
@@ -114,72 +114,99 @@ export default function Chat() {
         <Dialog.Portal container={container}>
           <Dialog.Overlay className={styles.DialogOverlay} />
           <Dialog.Content className={styles.DialogContent}>
+            <Dialog.Description className="sr-only">
+              Chat with your journal using AI
+            </Dialog.Description>
             <div className={styles.scroller}>
-              <AnimatePresence>
-                <div className={styles.header}>
-                  <div className={styles.wrapper}>
-                    <Blobs show={querying} />
-                    <Dialog.Title className={styles.DialogTitle}>
-                      <Status setReady={setReady} />
-                    </Dialog.Title>
-                    <div className={styles.buttons}>
-                      <div
-                        className={styles.button}
-                        onClick={onResetConversation}
-                      >
-                        <RefreshIcon className={styles.icon} />
-                        Clear chat
-                      </div>
-                      <Dialog.Close asChild>
-                        <button
-                          className={`${styles.close} ${osStyles}`}
-                          aria-label="Close Chat"
+              <AnimatePresence key="chat-content">
+                <motion.div
+                  key="chat-header"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className={styles.header}>
+                    <div className={styles.wrapper}>
+                      <Blobs show={querying} />
+                      <Dialog.Title className={styles.DialogTitle}>
+                        <Status setReady={setReady} />
+                      </Dialog.Title>
+                      <div className={styles.buttons}>
+                        <div
+                          className={styles.button}
+                          onClick={onResetConversation}
                         >
-                          <CrossIcon />
-                        </button>
-                      </Dialog.Close>
+                          <RefreshIcon className={styles.icon} />
+                          Clear chat
+                        </div>
+                        <Dialog.Close asChild>
+                          <button
+                            className={`${styles.close} ${osStyles}`}
+                            aria-label="Close Chat"
+                          >
+                            <CrossIcon />
+                          </button>
+                        </Dialog.Close>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className={styles.answer}>
-                  <VirtualList data={history} />
-                </div>
+                <motion.div
+                  key="chat-messages"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <div className={styles.answer}>
+                    <VirtualList data={history} />
+                  </div>
+                </motion.div>
               </AnimatePresence>
 
               <div className={styles.inputBar}>
-                <AnimatePresence>
-                  <div className={styles.holder}>
-                    <div className={styles.inputbaroverlay}></div>
-                    <div className={styles.bar}>
-                      <TextareaAutosize
-                        value={text}
-                        onChange={onChangeText}
-                        className={styles.textarea}
-                        onKeyDown={handleKeyPress}
-                        placeholder="Start chatting..."
-                        autoFocus
-                      />
+                <AnimatePresence key="input-bar">
+                  <motion.div
+                    key="input-container"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className={styles.holder}>
+                      <div className={styles.inputbaroverlay}></div>
+                      <div className={styles.bar}>
+                        <TextareaAutosize
+                          value={text}
+                          onChange={onChangeText}
+                          className={styles.textarea}
+                          onKeyDown={handleKeyPress}
+                          placeholder="Start chatting..."
+                          autoFocus
+                        />
 
-                      <button
-                        className={`${styles.ask} ${
-                          querying && styles.processing
-                        }`}
-                        onClick={onSubmit}
-                        disabled={querying}
-                      >
-                        {querying ? (
-                          <Thinking className={styles.spinner} />
-                        ) : (
-                          'Ask'
-                        )}
-                      </button>
+                        <button
+                          className={`${styles.ask} ${
+                            querying && styles.processing
+                          }`}
+                          onClick={onSubmit}
+                          disabled={querying}
+                        >
+                          {querying ? (
+                            <Thinking className={styles.spinner} />
+                          ) : (
+                            'Ask'
+                          )}
+                        </button>
+                      </div>
+                      <div className={styles.disclaimer}>
+                        *AI can make mistakes. Consider checking important
+                        information.
+                      </div>
                     </div>
-                    <div className={styles.disclaimer}>
-                      *AI can make mistakes. Consider checking important
-                      information.
-                    </div>
-                  </div>
+                  </motion.div>
                 </AnimatePresence>
               </div>
             </div>

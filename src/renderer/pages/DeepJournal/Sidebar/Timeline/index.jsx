@@ -149,7 +149,7 @@ const Timeline = memo(() => {
   const scrollRef = useRef(null);
   const scrubRef = useRef(null);
   const { index } = useIndexContext();
-  const { visibleIndex, scrollToIndex, closestDate, setClosestDate } =
+  const { visibleIndex, scrollToIndex, closestDate, setClosestDate, isTimelineMinimized } =
     useTimelineContext();
   const [parentEntries, setParentEntries] = useState([]);
   const [oldestDate, setOldestDate] = useState(new Date());
@@ -274,10 +274,14 @@ const Timeline = memo(() => {
   }, [closestDate]);
 
   return (
-    <div ref={scrollRef} className={styles.timeline}>
+    <div ref={scrollRef} className={`${styles.timeline} ${isTimelineMinimized ? styles.minimized : ''}`}>
       <VerticalSidebar />
-      {weeks}
-      <div ref={scrubRef} className={styles.scrubber}></div>
+      {!isTimelineMinimized && (
+        <>
+          {weeks}
+          <div ref={scrubRef} className={styles.scrubber}></div>
+        </>
+      )}
     </div>
   );
 });

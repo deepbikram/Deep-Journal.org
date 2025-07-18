@@ -7,11 +7,48 @@ import {
   SearchIcon,
   SettingsIcon,
   HelpIcon,
-  PersonIcon
+  PersonIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from 'renderer/icons';
+import { useTimelineContext } from 'renderer/context/TimelineContext';
 
 export default function VerticalSidebar() {
+  const { isTimelineMinimized, toggleTimelineMinimized, isMaximized, manualToggle } = useTimelineContext();
+
+  // Determine the appropriate icon and title based on current state
+  const getTimelineToggleConfig = () => {
+    if (manualToggle) {
+      // User has manually overridden, show current state
+      return {
+        icon: isTimelineMinimized ? ChevronRightIcon : ChevronLeftIcon,
+        title: isTimelineMinimized ? 'Show Timeline' : 'Hide Timeline'
+      };
+    } else {
+      // Auto mode - show what will happen based on window state
+      if (isMaximized) {
+        return {
+          icon: ChevronLeftIcon,
+          title: 'Timeline shown (maximized)'
+        };
+      } else {
+        return {
+          icon: ChevronRightIcon,
+          title: 'Timeline hidden (windowed)'
+        };
+      }
+    }
+  };
+
+  const timelineConfig = getTimelineToggleConfig();
+
   const sidebarButtons = [
+    {
+      id: 'timeline-toggle',
+      icon: timelineConfig.icon,
+      title: timelineConfig.title,
+      action: 'timeline-toggle'
+    },
     {
       id: 'home',
       icon: HomeIcon,
@@ -57,6 +94,11 @@ export default function VerticalSidebar() {
   ];
 
   const handleButtonClick = (button) => {
+    if (button.action === 'timeline-toggle') {
+      toggleTimelineMinimized();
+      return;
+    }
+
     if (button.action === 'trigger') {
       // Special handling for account button - trigger settings and set to account section
       if (button.id === 'account') {

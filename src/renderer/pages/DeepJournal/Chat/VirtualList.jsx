@@ -48,7 +48,13 @@ const VirtualList = memo(({ data }) => {
     [data]
   );
 
-  const getKey = useCallback((index) => `${index}-item`, [data]);
+  const getKey = useCallback((index, item) => {
+    // Create a more unique key using content hash or timestamp
+    if (item && item.content) {
+      return `${index}-${item.role}-${item.content.slice(0, 10).replace(/\s/g, '')}-${item.content.length}`;
+    }
+    return `${index}-item`;
+  }, []);
 
   return (
     <Virtuoso

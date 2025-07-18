@@ -159,6 +159,21 @@
     width: var(--sidebar-width);
     flex: 0 0 var(--sidebar-width);
     border-right: 1px solid rgba(0, 0, 0, 0.03);
+    transition: width 300ms ease, opacity 300ms ease;
+
+    &.minimized {
+      width: 80px; /* Just enough space for the vertical sidebar */
+
+      .top {
+        width: 80px;
+
+        .part {
+          width: 80px;
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+    }
 
     @media only screen and (max-width: 909px) {
       display: none;
@@ -215,6 +230,11 @@
     height: 100vh;
     overflow-y: overlay;
     overflow-x: hidden;
+    transition: margin-left 300ms ease;
+
+    &.expanded {
+      margin-left: 80px; /* Reduced margin when timeline is minimized */
+    }
 
     @media only screen and (max-width: 909px) {
       margin-left: 0;
