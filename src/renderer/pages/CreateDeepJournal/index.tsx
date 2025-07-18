@@ -4,7 +4,7 @@ import { TrashIcon } from 'renderer/icons';
 import { Link } from 'react-router-dom';
 import { useDeepJournalsContext } from 'renderer/context/DeepJournalsContext';
 import { useNavigate } from 'react-router-dom';
-import icon from '../../../../assets/logo.png';
+import icon from '../../../../assets/icon.png';
 import { motion } from 'framer-motion';
 const deepJournalsList = ['Users/uj/Personal', 'Users/uj/Startup', 'Users/uj/School'];
 
